@@ -10,7 +10,13 @@ public interface UserProfileStore {
 
     UserProfile save(UserProfile userProfile);
 
-    UserProfile save(String name, String username, String rawPassword);
+    /**
+     * @param name
+     * @param username
+     * @param encodedPassword should be encoded, i.e. encrypted
+     * @return
+     */
+    UserProfile save(String name, String username, String encodedPassword);
 
     Optional<UserProfile> findByUsernameIgnoreCase(String username);
 

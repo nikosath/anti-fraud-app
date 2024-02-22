@@ -1,5 +1,6 @@
 package antifraud.domain;
 
+import antifraud.domain.TransactionValidation.ValidationResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,7 @@ public class TransactionValidationController {
     public ResponseEntity<ValidationResponse> validateTransaction(@RequestBody ValidationRequest request) {
         log.info("validateTransaction for request: " + request);
         var validationResult = TransactionValidation.validateTransaction(request.amount());
-        if (INVALID_AMOUNT == validationResult) {
+        if (INVALID_AMOUNT.equals(validationResult)) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(new ValidationResponse(validationResult));
@@ -25,6 +26,6 @@ public class TransactionValidationController {
     public record ValidationRequest(long amount) {
     }
 
-    public record ValidationResponse(TransactionValidation.ValidationResult result) {
+    public record ValidationResponse(ValidationResult result) {
     }
 }

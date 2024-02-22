@@ -18,8 +18,8 @@ public class UserProfileDbStore implements UserProfileStore {
     }
 
     @Override
-    public UserProfile save(String name, String username, String password) {
-        return repo.save(new UserProfile(name, username, password));
+    public UserProfile save(String name, String username, String encodedPassword) {
+        return repo.save(new UserProfile(name, username, encodedPassword));
     }
 
     @Override
