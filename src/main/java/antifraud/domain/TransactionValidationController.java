@@ -1,8 +1,6 @@
-package antifraud.web;
+package antifraud.domain;
 
-import antifraud.domain.TransactionValidation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,10 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static antifraud.domain.TransactionValidation.ValidationResult.INVALID_AMOUNT;
 
+@Slf4j
 @RestController
 public class TransactionValidationController {
-
-    Logger log = LoggerFactory.getLogger(TransactionValidationController.class);
 
     @PostMapping("/api/antifraud/transaction")
     public ResponseEntity<ValidationResponse> validateTransaction(@RequestBody ValidationRequest request) {
@@ -25,9 +22,9 @@ public class TransactionValidationController {
         return ResponseEntity.ok(new ValidationResponse(validationResult));
     }
 
-    public static record ValidationRequest(long amount) {
+    public record ValidationRequest(long amount) {
     }
 
-    public static record ValidationResponse(TransactionValidation.ValidationResult result) {
+    public record ValidationResponse(TransactionValidation.ValidationResult result) {
     }
 }

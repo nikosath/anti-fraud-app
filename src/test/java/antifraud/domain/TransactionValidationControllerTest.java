@@ -1,44 +1,51 @@
-package antifraud;
+package antifraud.domain;
 
 import antifraud.domain.TransactionValidation.ValidationResult;
-import antifraud.web.TransactionValidationController;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import antifraud.domain.TransactionValidationController.ValidationRequest;
+import antifraud.domain.TransactionValidationController.ValidationResponse;
+import antifraud.security.config.RestAuthenticationEntryPoint;
+import antifraud.security.config.SecurityConfig;
+import antifraud.security.storage.UserProfileStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import static antifraud.TestUtils.createPostRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WithMockUser
+@Import({SecurityConfig.class, RestAuthenticationEntryPoint.class})
+@WebMvcTest(TransactionValidationController.class)
 public class TransactionValidationControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-
     @Autowired
     ObjectMapper objectMapper;
+    @MockBean
+    UserProfileStore store;
 
     @ParameterizedTest
     @CsvSource({"150, ALLOWED", "1500, MANUAL_PROCESSING", "15000, PROHIBITED"})
     void validateTransaction_validAmount_properValidationResult(Long amount, ValidationResult validationResult) throws Exception {
         // given
-        var request = createRequest(amount);
+        var request = createPostRequest("/api/antifraud/transaction", new ValidationRequest(amount), objectMapper);
 
         // when
         var resultActions = mockMvc.perform(request);
 
         // then
         resultActions.andExpect(status().isOk());
-        var expected = new TransactionValidationController.ValidationResponse(validationResult);
+        var expected = new ValidationResponse(validationResult);
         assertEquals(expected, getValidationResponse(resultActions));
     }
 
@@ -46,7 +53,7 @@ public class TransactionValidationControllerTest {
     @ValueSource(longs = {-1L, 0L})
     void validateTransaction_invalidAmount_isBadRequest(Long amount) throws Exception {
         // given
-        var request = createRequest(amount);
+        var request = createPostRequest("/api/antifraud/transaction", new ValidationRequest(amount), objectMapper);
 
         // when
         var resultActions = mockMvc.perform(request);
@@ -55,16 +62,8 @@ public class TransactionValidationControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
 
-    private MockHttpServletRequestBuilder createRequest(Long amount) throws JsonProcessingException {
-        var validationRequest = new TransactionValidationController.ValidationRequest(amount);
-        String requestAsJson = objectMapper.writeValueAsString(validationRequest);
-        return post("/api/antifraud/transaction")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestAsJson);
-    }
-
-    private TransactionValidationController.ValidationResponse getValidationResponse(ResultActions result) throws Exception {
+    private ValidationResponse getValidationResponse(ResultActions result) throws Exception {
         String responseAsString = result.andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(responseAsString, TransactionValidationController.ValidationResponse.class);
+        return objectMapper.readValue(responseAsString, ValidationResponse.class);
     }
 }
