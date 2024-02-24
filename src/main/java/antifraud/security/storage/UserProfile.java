@@ -26,7 +26,11 @@ public class UserProfile implements UserDetails {
     private boolean credentialsNonExpired = true;
     private boolean enabled = true;
 
-    public UserProfile(String name, String username, String password) {
+    public static UserProfile with(String name, String username, String password) {
+        return new UserProfile(name, username, password);
+    }
+
+    private UserProfile(String name, String username, String password) {
         this.name = name;
         this.username = username.toLowerCase();
         this.password = password;

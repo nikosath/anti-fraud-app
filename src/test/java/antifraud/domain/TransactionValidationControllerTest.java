@@ -3,16 +3,13 @@ package antifraud.domain;
 import antifraud.domain.TransactionValidation.ValidationResult;
 import antifraud.domain.TransactionValidationController.ValidationRequest;
 import antifraud.domain.TransactionValidationController.ValidationResponse;
-import antifraud.security.config.RestAuthenticationEntryPoint;
-import antifraud.security.config.SecurityConfig;
-import antifraud.security.storage.UserProfileStore;
+import antifraud.security.config.SecurityFilterChainConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser
-@Import({SecurityConfig.class, RestAuthenticationEntryPoint.class})
+@Import({SecurityFilterChainConfig.class})
 @WebMvcTest(TransactionValidationController.class)
 public class TransactionValidationControllerTest {
 
@@ -31,8 +28,6 @@ public class TransactionValidationControllerTest {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
-    @MockBean
-    UserProfileStore store;
 
     @ParameterizedTest
     @CsvSource({"150, ALLOWED", "1500, MANUAL_PROCESSING", "15000, PROHIBITED"})

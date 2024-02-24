@@ -6,15 +6,12 @@ import java.util.Optional;
 /**
  * Storage for UserProfile, e.g. DB, in-memory
  */
-public interface UserProfileStore {
+public interface IUserProfileStore {
 
     UserProfile save(UserProfile userProfile);
 
     /**
-     * @param name
-     * @param username
      * @param encodedPassword should be encoded, i.e. encrypted
-     * @return
      */
     UserProfile save(String name, String username, String encodedPassword);
 

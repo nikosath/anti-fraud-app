@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class UserProfileDbStore implements UserProfileStore {
+public class UserProfileDbStore implements IUserProfileStore {
 
     private final UserProfileJpaRepo repo;
 
@@ -19,7 +19,7 @@ public class UserProfileDbStore implements UserProfileStore {
 
     @Override
     public UserProfile save(String name, String username, String encodedPassword) {
-        return repo.save(new UserProfile(name, username, encodedPassword));
+        return repo.save(UserProfile.with(name, username, encodedPassword));
     }
 
     @Override

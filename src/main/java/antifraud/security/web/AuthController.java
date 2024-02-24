@@ -1,7 +1,7 @@
 package antifraud.security.web;
 
 import antifraud.error.Error;
-import antifraud.security.service.AuthService;
+import antifraud.security.service.IAuthService;
 import antifraud.security.storage.UserProfile;
 import io.vavr.control.Either;
 import jakarta.validation.Valid;
@@ -15,12 +15,12 @@ import java.util.List;
 
 import static antifraud.error.Error.toHttpStatus;
 
-@RequiredArgsConstructor
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
+    @RequiredArgsConstructor
+    @RestController
+    @RequestMapping("/api/auth")
+    public class AuthController {
 
-    private final AuthService authService;
+        private final IAuthService authService;
 
     @PostMapping("/user")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest req) {
@@ -48,7 +48,7 @@ public class AuthController {
 
     public record UserRequest(String name, @NotBlank String username, @NotBlank String password) {
         public static UserProfile toUserProfile(UserRequest req) {
-            return new UserProfile(req.name(), req.username(), req.password());
+            return UserProfile.with(req.name(), req.username(), req.password());
         }
     }
 
