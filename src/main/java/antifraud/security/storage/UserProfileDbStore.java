@@ -10,7 +10,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserProfileDbStore implements IUserProfileStore {
 
-    private final UserProfileJpaRepo repo;
+    private final IUserProfileJpaRepo repo;
 
     @Override
     public UserProfile save(UserProfile userProfile) {
