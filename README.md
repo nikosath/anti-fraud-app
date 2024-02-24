@@ -5,7 +5,7 @@ Work in progress. Less than halfway done. You can review the project with GitHub
 - [Vavr's Either type](https://docs.vavr.io/#_either) for a more functional error handling.
 - Java 21 features: records, enhanced switch, and later on, pattern matching.
 ## Considerations/Notes:
-- I am using the C# naming convention for interfaces, e.g. IAuthService.
+- I am using the C# interface naming convention for both interfaces and abstract classes, e.g. IAuthService.
 - Packages are organized first by functionality and second by technical layer.
 - Test methods are named using the pattern methodName_givenCondition_thenResult or methodName_expectResult.
 - Sometimes I prefer to use anonymous classes over lambdas for clarity.
