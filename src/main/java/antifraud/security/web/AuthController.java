@@ -1,6 +1,6 @@
 package antifraud.security.web;
 
-import antifraud.error.Error;
+import antifraud.error.ErrorEnum;
 import antifraud.security.service.IAuthService;
 import antifraud.security.storage.UserProfile;
 import io.vavr.control.Either;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static antifraud.error.Error.toHttpStatus;
+import static antifraud.error.ErrorEnum.toHttpStatus;
 
     @RequiredArgsConstructor
     @RestController
@@ -24,7 +24,7 @@ import static antifraud.error.Error.toHttpStatus;
 
     @PostMapping("/user")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest req) {
-        Either<Error, UserProfile> userProfile = authService.createUser(UserRequest.toUserProfile(req));
+        Either<ErrorEnum, UserProfile> userProfile = authService.createUser(UserRequest.toUserProfile(req));
         return userProfile.map(profile -> UserResponse.fromUserProfile(profile))
                 .map(userResponse -> ResponseEntity.status(HttpStatus.CREATED).body(userResponse))
                 .getOrElseGet(error -> ResponseEntity.status(toHttpStatus(error)).build());
@@ -39,7 +39,7 @@ import static antifraud.error.Error.toHttpStatus;
 
     @DeleteMapping("/user/{username}")
     public ResponseEntity<DeleteResponse> deleteUser(@PathVariable String username) {
-        Either<Error, UserProfile> userProfile = authService.deleteUser(username);
+        Either<ErrorEnum, UserProfile> userProfile = authService.deleteUser(username);
         return userProfile.map(profile -> new DeleteResponse(profile.getUsername(), "Deleted successfully!"))
                 .map(resp -> ResponseEntity.ok(resp))
                 .getOrElseGet(error -> ResponseEntity.status(toHttpStatus(error)).build());

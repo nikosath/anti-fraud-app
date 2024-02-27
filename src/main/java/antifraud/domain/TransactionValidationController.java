@@ -1,13 +1,13 @@
 package antifraud.domain;
 
-import antifraud.domain.TransactionValidation.ValidationResult;
+import antifraud.domain.TransactionValidation.ValidationResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import static antifraud.domain.TransactionValidation.ValidationResult.INVALID_AMOUNT;
+import static antifraud.domain.TransactionValidation.ValidationResultEnum.INVALID_AMOUNT;
 
 @Slf4j
 @RestController
@@ -26,6 +26,6 @@ public class TransactionValidationController {
     public record ValidationRequest(long amount) {
     }
 
-    public record ValidationResponse(ValidationResult result) {
+    public record ValidationResponse(ValidationResultEnum result) {
     }
 }

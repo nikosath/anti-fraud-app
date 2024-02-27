@@ -11,7 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import static antifraud.domain.TransactionValidation.ValidationResult.ALLOWED;
+import static antifraud.domain.TransactionValidation.ValidationResultEnum.ALLOWED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 

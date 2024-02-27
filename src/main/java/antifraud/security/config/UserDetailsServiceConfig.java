@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserDetailsServiceConfig {
 
     @Bean
-    public UserDetailsService jpaUserDetailsService(IUserProfileStore store) {
+    public UserDetailsService userDetailsService(IUserProfileStore store) {
 //        var user1 = UserProfile.with("Name1", "user1", passwordEncoder().encode("pass1"));
 //        store.save(user1);
 

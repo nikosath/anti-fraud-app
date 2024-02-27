@@ -1,10 +1,10 @@
 package antifraud.domain;
 
-import static antifraud.domain.TransactionValidation.ValidationResult.*;
+import static antifraud.domain.TransactionValidation.ValidationResultEnum.*;
 
 public class TransactionValidation {
 
-    public static ValidationResult validateTransaction(long amount) {
+    public static ValidationResultEnum validateTransaction(long amount) {
         if (amount <= 0) {
             return INVALID_AMOUNT;
         } else if (amount <= 200) {
@@ -16,7 +16,7 @@ public class TransactionValidation {
         }
     }
 
-    public enum ValidationResult {
+    public enum ValidationResultEnum {
         ALLOWED, MANUAL_PROCESSING, PROHIBITED, INVALID_AMOUNT
     }
 }

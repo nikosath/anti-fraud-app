@@ -1,6 +1,6 @@
 package antifraud.domain;
 
-import antifraud.domain.TransactionValidation.ValidationResult;
+import antifraud.domain.TransactionValidation.ValidationResultEnum;
 import antifraud.domain.TransactionValidationController.ValidationRequest;
 import antifraud.domain.TransactionValidationController.ValidationResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
@@ -31,7 +31,7 @@ public class TransactionValidationControllerTest {
 
     @ParameterizedTest
     @CsvSource({"150, ALLOWED", "1500, MANUAL_PROCESSING", "15000, PROHIBITED"})
-    void validateTransaction_validAmount_properValidationResult(Long amount, ValidationResult validationResult) throws Exception {
+    void validateTransaction_validAmount_properValidationResult(Long amount, ValidationResultEnum validationResult) throws Exception {
         // given
         var request = createPostRequest("/api/antifraud/transaction", new ValidationRequest(amount), objectMapper);
 

@@ -2,6 +2,7 @@ package antifraud.security;
 
 import antifraud.security.config.SecurityFilterChainConfig;
 import antifraud.security.service.FakeAuthService;
+import antifraud.security.service.FakeAuthService.BehaviorEnum;
 import antifraud.security.web.AuthController;
 import antifraud.security.web.AuthController.UserRequest;
 import antifraud.security.web.AuthController.UserResponse;
@@ -38,7 +39,7 @@ class AuthControllerTest {
     @Test
     void createUser_succeeds() throws Exception {
         // given
-        fakeAuthService.setCreateUserBehavior(FakeAuthService.Behavior.SUCCEEDS);
+        fakeAuthService.setCreateUserBehavior(BehaviorEnum.SUCCEEDS);
         var userRequest = new UserRequest("Name2", "user2", "pass2");
         var request = createPostRequest("/api/auth/user", userRequest, objectMapper);
 
@@ -56,7 +57,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser
     void listUsers_returnsExpectedEntities() throws Exception {
-        fakeAuthService.setListUsersBehavior(FakeAuthService.Behavior.RETURNS_2_ENTITIES);
+        fakeAuthService.setListUsersBehavior(BehaviorEnum.RETURNS_2_ENTITIES);
 
         var resultActions = mockMvc.perform(get("/api/auth/list"));
 
@@ -79,7 +80,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser
     void deleteUser_withAuthorizedUser_succeeds() throws Exception {
-        fakeAuthService.setDeleteUserBehavior(FakeAuthService.Behavior.SUCCEEDS);
+        fakeAuthService.setDeleteUserBehavior(BehaviorEnum.SUCCEEDS);
 
         mockMvc.perform(delete("/api/auth/user/user1"))
                 .andExpect(status().isOk());
