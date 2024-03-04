@@ -1,5 +1,6 @@
 package antifraud.domain;
 
+import antifraud.common.Uri;
 import antifraud.domain.TransactionValidation.ValidationResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import static antifraud.domain.TransactionValidation.ValidationResultEnum.INVALI
 @RestController
 public class TransactionValidationController {
 
-    @PostMapping("/api/antifraud/transaction")
+    @PostMapping(Uri.API_ANTIFRAUD_TRANSACTION)
     public ResponseEntity<ValidationResponse> validateTransaction(@RequestBody ValidationRequest request) {
         log.info("validateTransaction for request: " + request);
         var validationResult = TransactionValidation.validateTransaction(request.amount());

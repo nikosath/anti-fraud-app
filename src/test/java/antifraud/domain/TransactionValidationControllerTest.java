@@ -16,10 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static antifraud.TestUtils.createPostRequest;
+import static antifraud.common.Uri.API_ANTIFRAUD_TRANSACTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WithMockUser
+@WithMockUser(roles = "MERCHANT")
 @Import({SecurityFilterChainConfig.class})
 @WebMvcTest(TransactionValidationController.class)
 public class TransactionValidationControllerTest {
@@ -33,7 +34,7 @@ public class TransactionValidationControllerTest {
     @CsvSource({"150, ALLOWED", "1500, MANUAL_PROCESSING", "15000, PROHIBITED"})
     void validateTransaction_validAmount_properValidationResult(Long amount, ValidationResultEnum validationResult) throws Exception {
         // given
-        var request = createPostRequest("/api/antifraud/transaction", new ValidationRequest(amount), objectMapper);
+        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidationRequest(amount), objectMapper);
 
         // when
         var resultActions = mockMvc.perform(request);
@@ -48,7 +49,7 @@ public class TransactionValidationControllerTest {
     @ValueSource(longs = {-1L, 0L})
     void validateTransaction_invalidAmount_isBadRequest(Long amount) throws Exception {
         // given
-        var request = createPostRequest("/api/antifraud/transaction", new ValidationRequest(amount), objectMapper);
+        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidationRequest(amount), objectMapper);
 
         // when
         var resultActions = mockMvc.perform(request);

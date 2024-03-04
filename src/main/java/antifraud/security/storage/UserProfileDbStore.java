@@ -17,10 +17,10 @@ public class UserProfileDbStore implements IUserProfileStore {
         return repo.save(userProfile);
     }
 
-    @Override
-    public UserProfile save(String name, String username, String encodedPassword) {
-        return repo.save(UserProfile.with(name, username, encodedPassword));
-    }
+//    @Override
+//    public UserProfile save(String name, String username, String encodedPassword) {
+//        return repo.save(new UserProfileFactory().admin(name, username, encodedPassword));
+//    }
 
     @Override
     public Optional<UserProfile> findByUsernameIgnoreCase(String username) {

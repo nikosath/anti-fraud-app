@@ -1,46 +1,90 @@
 package antifraud.security.storage;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class UserProfile implements UserDetails {
     @Id
+//    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    // TODO: create a separate User entity. User 1to1 UserProfile
     private String name;
-    private String password;
     @Column(unique = true)
     private String username;
-//    private Set<GrantedAuthority> authorities = new HashSet<>();
-    private boolean accountNonExpired = true;
-    private boolean accountNonLocked = true;
-    private boolean credentialsNonExpired = true;
-    private boolean enabled = true;
+    private String password;
+//    @Transient
+    @Enumerated(EnumType.STRING)
+    private SecurityRoleEnum role;
+//    private Set<SecurityPermissionEnum> permissions;
+    @Transient
+    private transient Set<GrantedAuthority> authorities;
+//    private boolean accountNonExpired = true;
+    private boolean accountNonLocked;
+//    private boolean credentialsNonExpired = true;
+//    private boolean enabled = true;
 
-    public static UserProfile with(String name, String username, String password) {
-        return new UserProfile(name, username, password);
+    public static UserProfile with(String name, String username, String password, SecurityRoleEnum role, boolean accountNonLocked) {
+        return new UserProfile(name, username, password, role, accountNonLocked);
     }
 
-    private UserProfile(String name, String username, String password) {
+    private UserProfile(String name, String username, String password, SecurityRoleEnum role, boolean accountNonLocked) {
         this.name = name;
-        this.username = username.toLowerCase();
+        setUsername(username);
         this.password = password;
+        setRole(role);
+//        this.role = getRoles(role);
+        // TODO: create a Set/SimpleGrantedAuthority/GrantedAuthority object pool
+//        setAuthorities(role);
+//        this.authority = new SimpleGrantedAuthority(role.name());
+        this.accountNonLocked = accountNonLocked;
+    }
+
+    public void setRole(SecurityRoleEnum role) {
+        this.role = role;
+        setAuthoritiesFromRole(role);
+    }
+
+    private void setAuthoritiesFromRole(SecurityRoleEnum role) {
+        this.authorities = Set.of(role.getAuthority());
+    }
+
+    public Set<GrantedAuthority> getAuthorities() {
+        if (authorities == null) {
+            setAuthoritiesFromRole(role);
+        }
+        return authorities;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    // TODO: Consider applying toLowerCase elsewhere, not here
     public void setUsername(String username) {
         this.username = username.toLowerCase();
     }

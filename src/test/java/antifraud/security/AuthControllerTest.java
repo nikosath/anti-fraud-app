@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static antifraud.TestUtils.createPostRequest;
+import static antifraud.common.Uri.API_AUTH_LIST;
+import static antifraud.common.Uri.API_AUTH_USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,7 +43,7 @@ class AuthControllerTest {
         // given
         fakeAuthService.setCreateUserBehavior(BehaviorEnum.SUCCEEDS);
         var userRequest = new UserRequest("Name2", "user2", "pass2");
-        var request = createPostRequest("/api/auth/user", userRequest, objectMapper);
+        var request = createPostRequest(API_AUTH_USER, userRequest, objectMapper);
 
         // when
         mockMvc.perform(request)
@@ -50,16 +52,16 @@ class AuthControllerTest {
 
     @Test
     void listUsers_withoutAuthorizedUser_failsAsUnauthorized() throws Exception {
-        mockMvc.perform(get("/api/auth/list"))
+        mockMvc.perform(get(API_AUTH_LIST))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "SUPPORT")
     void listUsers_returnsExpectedEntities() throws Exception {
         fakeAuthService.setListUsersBehavior(BehaviorEnum.RETURNS_2_ENTITIES);
 
-        var resultActions = mockMvc.perform(get("/api/auth/list"));
+        var resultActions = mockMvc.perform(get(API_AUTH_LIST));
 
         resultActions.andExpect(status().isOk());
         assertEquals(2, getList(resultActions).size());
@@ -73,16 +75,16 @@ class AuthControllerTest {
 
     @Test
     void deleteUser_withoutAuthorizedUser_failsAsUnauthorized() throws Exception {
-        mockMvc.perform(delete("/api/auth/user/user1"))
+        mockMvc.perform(delete(API_AUTH_USER + "/user1"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMINISTRATOR")
     void deleteUser_withAuthorizedUser_succeeds() throws Exception {
         fakeAuthService.setDeleteUserBehavior(BehaviorEnum.SUCCEEDS);
 
-        mockMvc.perform(delete("/api/auth/user/user1"))
+        mockMvc.perform(delete(API_AUTH_USER + "/user1"))
                 .andExpect(status().isOk());
     }
 }
