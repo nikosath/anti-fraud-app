@@ -60,7 +60,8 @@ public class AuthController {
     @PutMapping(Uri.API_AUTH_ACCESS)
     public ResponseEntity<LockStatusResponse> updateUserLockStatus(String username, LockOperationEnum operation) {
         Either<ErrorEnum, LockOperationEnum> result = authService.updateUserLockStatus(username, operation);
-        return result.map(lockOperation -> new LockStatusResponse(lockOperation))
+        // TODO: take username from updateUserLockStatus response
+        return result.map(lockOperation -> new LockStatusResponse(username, lockOperation))
                 .map(lockStatusResponse -> ResponseEntity.status(HttpStatus.OK).body(lockStatusResponse))
                 .getOrElseGet(error -> toResponseEntity(error));
     }
@@ -80,7 +81,15 @@ public class AuthController {
     public record DeleteResponse(String username, String status) {
     }
 
-    public record LockStatusResponse(LockOperationEnum status) {
+    public record LockStatusResponse(String status) {
+        LockStatusResponse(String username, LockOperationEnum operation) {
+            this(toStatus(username, operation));
+        }
+
+        private static String toStatus(String username, LockOperationEnum operation) {
+            String lockStatus = LockOperationEnum.LOCK.equals(operation) ? "locked" : "unlocked";
+            return String.format("User %s %s!", username, lockStatus);
+        }
     }
 
     private static <R> ResponseEntity<R> toResponseEntity(ErrorEnum error) {
