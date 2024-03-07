@@ -8,6 +8,7 @@ import antifraud.security.storage.SecurityRoleEnum;
 import antifraud.security.storage.UserProfile;
 import antifraud.security.storage.UserProfileFactory;
 import io.vavr.control.Either;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,12 @@ public class AuthService extends IAuthService {
     public static final Set<SecurityRoleEnum> ALLOWED_ROLES = Set.of(SUPPORT, MERCHANT);
     private final IUserProfileStore userProfileStore;
     private final PasswordEncoder passwordEncoder;
-    private boolean isFirstCreation = true;
+    private boolean isFirstUserCreation;
+
+    @PostConstruct
+    void init() {
+        isFirstUserCreation = userProfileStore.count() == 0;
+    }
 
     @Override
     public Either<ErrorEnum, UserProfile> createUser(String name, String username, String password) {
@@ -39,9 +45,9 @@ public class AuthService extends IAuthService {
 
         String encodedPassword = passwordEncoder.encode(password);
         UserProfile userProfile;
-        if (isFirstCreation) {
+        if (isFirstUserCreation) {
             userProfile = UserProfileFactory.newAdmin(name, username, encodedPassword);
-            isFirstCreation = false;
+            isFirstUserCreation = false;
         } else {
             userProfile = UserProfileFactory.newMerchant(name, username, encodedPassword);
         }
@@ -60,25 +66,17 @@ public class AuthService extends IAuthService {
         if (!userProfileStore.existsByUsernameIgnoreCase(username)) {
             return Result.error(ENTITY_NOT_FOUND);
         }
-        var deleted = userProfileStore.deleteByUsernameIgnoreCase(username).get(0);
+        var deleted = userProfileStore.deleteByUsernameIgnoreCase(username).orElseThrow();
         return Result.success(deleted);
     }
 
     @Override
     public Either<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
-        return validateAndGetUser(username, role)
-                .map(user -> {
-                    user.setRole(role);
-                    return userProfileStore.save(user);
-                });
-
-//        if (result.isEmpty()) {
-//            return result;
-//        }
-//        UserProfile user = result.get();
-//        user.setRole(role);
-//        UserProfile saved = userProfileStore.save(user);
-//        return Result.success(saved);
+        Either<ErrorEnum, UserProfile> either = validateAndGetUser(username, role);
+        return either.map(user -> {
+            user.setRole(role);
+            return userProfileStore.save(user);
+        });
     }
 
     @Override

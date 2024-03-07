@@ -50,7 +50,7 @@ public class SecurityFilterChainConfig {
                         .requestMatchers(HttpMethod.GET, Uri.API_AUTH_LIST).hasAnyRole(ADMINISTRATOR.name(), SUPPORT.name())
                         .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_TRANSACTION).hasRole(MERCHANT.name())
                         .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ACCESS).hasRole(ADMINISTRATOR.name())
-                        .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ROLE).hasRole(MERCHANT.name())
+                        .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ROLE).hasRole(ADMINISTRATOR.name())
                         .requestMatchers(Uri.ACTUATOR_SHUTDOWN).permitAll() // needs to run test
                         .anyRequest().denyAll()
                 ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // no session

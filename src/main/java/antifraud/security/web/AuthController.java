@@ -9,7 +9,9 @@ import antifraud.security.storage.UserProfile;
 import io.vavr.control.Either;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,21 +22,23 @@ import static antifraud.error.ErrorEnum.toHttpStatus;
 
 @RequiredArgsConstructor
 @RestController
-//@RequestMapping(Uri.API_AUTH)
+@Slf4j
 public class AuthController {
 
     private final IAuthService authService;
 
     @PostMapping(Uri.API_AUTH_USER)
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest req) {
-        Either<ErrorEnum, UserProfile> userProfile = authService.createUser(req.name(), req.username(), req.password());
-        return userProfile.map(profile -> UserResponse.fromUserProfile(profile))
+        log.debug("createUser req = " + req);
+        Either<ErrorEnum, UserProfile> either = authService.createUser(req.name(), req.username(), req.password());
+        return either.map(profile -> UserResponse.fromUserProfile(profile))
                 .map(userResponse -> ResponseEntity.status(HttpStatus.CREATED).body(userResponse))
                 .getOrElseGet(error -> toResponseEntity(error));
     }
 
     @GetMapping(Uri.API_AUTH_LIST)
     public List<UserResponse> listUsers() {
+        log.debug("listUsers");
         List<UserProfile> userProfiles = authService.listUsers();
         return userProfiles.stream()
                 .map(userProfile -> UserResponse.fromUserProfile(userProfile))
@@ -43,43 +47,47 @@ public class AuthController {
 
     @DeleteMapping(Uri.API_AUTH_USER + Uri.USERNAME)
     public ResponseEntity<DeleteResponse> deleteUser(@PathVariable String username) {
-        Either<ErrorEnum, UserProfile> userProfile = authService.deleteUser(username);
-        return userProfile.map(profile -> new DeleteResponse(profile.getUsername(), "Deleted successfully!"))
+        log.debug("deleteUser username = " + username);
+        Either<ErrorEnum, UserProfile> either = authService.deleteUser(username);
+        return either.map(profile -> new DeleteResponse(profile.getUsername(), "Deleted successfully!"))
                 .map(resp -> ResponseEntity.ok(resp))
                 .getOrElseGet(error -> toResponseEntity(error));
     }
 
     @PutMapping(Uri.API_AUTH_ROLE)
-    public ResponseEntity<UserResponse> updateUserRole(String username, SecurityRoleEnum role) {
-        Either<ErrorEnum, UserProfile> userProfile = authService.updateUserRole(username, role);
-        return userProfile.map(profile -> UserResponse.fromUserProfile(profile))
+    public ResponseEntity<UserResponse> updateUserRole(@Valid @RequestBody UserRoleRequest req) {
+        log.debug("updateUserRole req = " + req);
+        Either<ErrorEnum, UserProfile> either = authService.updateUserRole(req.username(), req.role());
+        return either.map(profile -> UserResponse.fromUserProfile(profile))
                 .map(userResponse -> ResponseEntity.status(HttpStatus.OK).body(userResponse))
                 .getOrElseGet(error -> toResponseEntity(error));
     }
 
     @PutMapping(Uri.API_AUTH_ACCESS)
-    public ResponseEntity<LockStatusResponse> updateUserLockStatus(String username, LockOperationEnum operation) {
-        Either<ErrorEnum, LockOperationEnum> result = authService.updateUserLockStatus(username, operation);
+    public ResponseEntity<LockStatusResponse> updateUserLockStatus(@Valid @RequestBody LockStatusRequest req) {
+        log.debug("updateUserLockStatus req = " + req);
+        Either<ErrorEnum, LockOperationEnum> either = authService.updateUserLockStatus(req.username(), req.operation());
         // TODO: take username from updateUserLockStatus response
-        return result.map(lockOperation -> new LockStatusResponse(username, lockOperation))
+        return either.map(lockOperation -> new LockStatusResponse(req.username(), lockOperation))
                 .map(lockStatusResponse -> ResponseEntity.status(HttpStatus.OK).body(lockStatusResponse))
                 .getOrElseGet(error -> toResponseEntity(error));
     }
 
     public record UserRequest(String name, @NotBlank String username, @NotBlank String password) {
-//        public static UserProfile toUserProfile(UserRequest req) {
-//            return new UserProfileFactory().admin(req.name(), req.username(), req.password());
-//        }
     }
 
     public record UserResponse(long id, String name, String username, SecurityRoleEnum role) {
-        public static UserResponse fromUserProfile(UserProfile user) {
+        static UserResponse fromUserProfile(UserProfile user) {
             return new UserResponse(user.getId(), user.getName(), user.getUsername(), user.getRole());
         }
     }
 
     public record DeleteResponse(String username, String status) {
     }
+
+    public record UserRoleRequest(@NotBlank String username, @NotNull SecurityRoleEnum role) {}
+
+    public record LockStatusRequest(@NotBlank String username, @NotNull LockOperationEnum operation) {}
 
     public record LockStatusResponse(String status) {
         LockStatusResponse(String username, LockOperationEnum operation) {

@@ -1,11 +1,14 @@
-package antifraud.security;
+package antifraud.security.web;
 
+import antifraud.security.LockOperationEnum;
 import antifraud.security.config.SecurityFilterChainConfig;
 import antifraud.security.service.FakeAuthService;
 import antifraud.security.service.FakeAuthService.BehaviorEnum;
-import antifraud.security.web.AuthController;
+import antifraud.security.storage.SecurityRoleEnum;
+import antifraud.security.web.AuthController.LockStatusRequest;
 import antifraud.security.web.AuthController.UserRequest;
 import antifraud.security.web.AuthController.UserResponse;
+import antifraud.security.web.AuthController.UserRoleRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -19,8 +22,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static antifraud.TestUtils.createPostRequest;
-import static antifraud.common.Uri.API_AUTH_LIST;
-import static antifraud.common.Uri.API_AUTH_USER;
+import static antifraud.TestUtils.createPutRequest;
+import static antifraud.common.Uri.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,8 +45,8 @@ class AuthControllerTest {
     void createUser_succeeds() throws Exception {
         // given
         fakeAuthService.setCreateUserBehavior(BehaviorEnum.SUCCEEDS);
-        var userRequest = new UserRequest("Name2", "user2", "pass2");
-        var request = createPostRequest(API_AUTH_USER, userRequest, objectMapper);
+        var payload = new UserRequest("Name2", "user2", "pass2");
+        var request = createPostRequest(API_AUTH_USER, payload, objectMapper);
 
         // when
         mockMvc.perform(request)
@@ -85,6 +88,28 @@ class AuthControllerTest {
         fakeAuthService.setDeleteUserBehavior(BehaviorEnum.SUCCEEDS);
 
         mockMvc.perform(delete(API_AUTH_USER + "/user1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMINISTRATOR")
+    void updateUserRole_withAuthorizedUser_succeeds() throws Exception {
+        fakeAuthService.setUpdateUserRoleBehavior(BehaviorEnum.SUCCEEDS);
+        var payload = new UserRoleRequest("user1", SecurityRoleEnum.MERCHANT);
+        var request = createPutRequest(API_AUTH_ROLE, payload, objectMapper);
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMINISTRATOR")
+    void updateUserLockStatus_withAuthorizedUser_succeeds() throws Exception {
+        fakeAuthService.setUpdateUserLockStatusBehavior(BehaviorEnum.SUCCEEDS);
+        var payload = new LockStatusRequest("user1", LockOperationEnum.UNLOCK);
+        var request = createPutRequest(API_AUTH_ACCESS, payload, objectMapper);
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk());
     }
 }

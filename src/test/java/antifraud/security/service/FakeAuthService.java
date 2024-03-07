@@ -56,6 +56,7 @@ public class FakeAuthService extends IAuthService {
     public Either<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
         if (updateUserRoleBehavior == BehaviorEnum.SUCCEEDS) {
             var user1 = UserProfileFactory.newAdmin("Name1", "user1", "pass1");
+            user1.setId(1L);
             return Result.success(user1);
         }
         return Result.error(ErrorEnum.ENTITY_NOT_FOUND);

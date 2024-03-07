@@ -19,7 +19,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatusCode status,
             WebRequest request) {
-        log.info("ex = " + ex + ", headers = " + headers + ", status = " + status + ", request = " + request);
+
+        log.debug("ex = " + ex + ", headers = " + headers + ", status = " + status + ", request = " + request);
         return new ResponseEntity<>(ex.getBody(), headers, ex.getStatusCode());
     }
 }

@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString
 //@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
-public class UserProfile implements UserDetails {
+public class UserProfile implements UserDetails, Comparable<UserProfile> {
     @Id
 //    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,4 +89,8 @@ public class UserProfile implements UserDetails {
         this.username = username.toLowerCase();
     }
 
+    @Override
+    public int compareTo(UserProfile other) {
+        return Long.compare(this.getId(), other.getId());
+    }
 }

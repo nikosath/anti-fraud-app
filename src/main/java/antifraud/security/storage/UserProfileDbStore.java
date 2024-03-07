@@ -1,6 +1,7 @@
 package antifraud.security.storage;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UserProfileDbStore implements IUserProfileStore {
 
     private final IUserProfileJpaRepo repo;
@@ -38,7 +40,20 @@ public class UserProfileDbStore implements IUserProfileStore {
     }
 
     @Override
-    public List<UserProfile> deleteByUsernameIgnoreCase(String username) {
-        return repo.deleteByUsernameIgnoreCase(username);
+    public Optional<UserProfile> deleteByUsernameIgnoreCase(String username) {
+        List<UserProfile> deleted = repo.deleteByUsernameIgnoreCase(username);
+        if (deleted.size() > 1) {
+            throw new RuntimeException(
+                    String.format("Deleted %s number of entities. The expectation was to delete only one.", deleted.size()));
+        }
+        if (deleted.size() == 1) {
+            return Optional.of(deleted.get(0));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public long count() {
+        return repo.count();
     }
 }

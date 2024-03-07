@@ -21,5 +21,7 @@ public interface IUserProfileStore {
 
     List<UserProfile> findAllByOrderByIdAsc();
 
-    List<UserProfile> deleteByUsernameIgnoreCase(String username);
+    Optional<UserProfile> deleteByUsernameIgnoreCase(String username);
+
+    long count();
 }
