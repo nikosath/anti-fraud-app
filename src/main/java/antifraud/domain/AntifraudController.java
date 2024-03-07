@@ -12,21 +12,21 @@ import static antifraud.domain.TransactionValidation.ValidationResultEnum.INVALI
 
 @Slf4j
 @RestController
-public class TransactionValidationController {
+public class AntifraudController {
 
     @PostMapping(Uri.API_ANTIFRAUD_TRANSACTION)
-    public ResponseEntity<ValidationResponse> validateTransaction(@RequestBody ValidationRequest request) {
+    public ResponseEntity<ValidateTransactionResponse> validateTransaction(@RequestBody ValidateTransactionRequest request) {
         log.info("validateTransaction for request: " + request);
         var validationResult = TransactionValidation.validateTransaction(request.amount());
         if (INVALID_AMOUNT.equals(validationResult)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(new ValidationResponse(validationResult));
+        return ResponseEntity.ok(new ValidateTransactionResponse(validationResult));
     }
 
-    public record ValidationRequest(long amount) {
+    public record ValidateTransactionRequest(long amount) {
     }
 
-    public record ValidationResponse(ValidationResultEnum result) {
+    public record ValidateTransactionResponse(ValidationResultEnum result) {
     }
 }

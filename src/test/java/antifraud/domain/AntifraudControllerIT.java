@@ -1,8 +1,8 @@
 package antifraud.domain;
 
 import antifraud.common.Uri;
-import antifraud.domain.TransactionValidationController.ValidationRequest;
-import antifraud.domain.TransactionValidationController.ValidationResponse;
+import antifraud.domain.AntifraudController.ValidateTransactionRequest;
+import antifraud.domain.AntifraudController.ValidateTransactionResponse;
 import antifraud.security.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TransactionValidationControllerIT {
+public class AntifraudControllerIT {
 
     public static final String MERCHANT_USERNAME = "user1";
     public static final String MERCHANT_PASSWORD = "pass1";
@@ -42,9 +42,9 @@ public class TransactionValidationControllerIT {
     void testValidateTransaction() {
         var headers = new HttpHeaders();
         headers.setBasicAuth(MERCHANT_USERNAME, MERCHANT_PASSWORD);
-        var request = new HttpEntity<>(new ValidationRequest(150L), headers) ;
+        var request = new HttpEntity<>(new ValidateTransactionRequest(150L), headers) ;
 
-        var actual = template.postForEntity(Uri.API_ANTIFRAUD_TRANSACTION, request, ValidationResponse.class);
+        var actual = template.postForEntity(Uri.API_ANTIFRAUD_TRANSACTION, request, ValidateTransactionResponse.class);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(ALLOWED, actual.getBody().result());

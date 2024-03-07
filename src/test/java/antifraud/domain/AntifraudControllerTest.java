@@ -1,8 +1,8 @@
 package antifraud.domain;
 
+import antifraud.domain.AntifraudController.ValidateTransactionRequest;
+import antifraud.domain.AntifraudController.ValidateTransactionResponse;
 import antifraud.domain.TransactionValidation.ValidationResultEnum;
-import antifraud.domain.TransactionValidationController.ValidationRequest;
-import antifraud.domain.TransactionValidationController.ValidationResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WithMockUser(roles = "MERCHANT")
 @Import({SecurityFilterChainConfig.class})
-@WebMvcTest(TransactionValidationController.class)
-public class TransactionValidationControllerTest {
+@WebMvcTest(AntifraudController.class)
+public class AntifraudControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -34,14 +34,14 @@ public class TransactionValidationControllerTest {
     @CsvSource({"150, ALLOWED", "1500, MANUAL_PROCESSING", "15000, PROHIBITED"})
     void validateTransaction_validAmount_properValidationResult(Long amount, ValidationResultEnum validationResult) throws Exception {
         // given
-        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidationRequest(amount), objectMapper);
+        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount), objectMapper);
 
         // when
         var resultActions = mockMvc.perform(request);
 
         // then
         resultActions.andExpect(status().isOk());
-        var expected = new ValidationResponse(validationResult);
+        var expected = new ValidateTransactionResponse(validationResult);
         assertEquals(expected, getValidationResponse(resultActions));
     }
 
@@ -49,7 +49,7 @@ public class TransactionValidationControllerTest {
     @ValueSource(longs = {-1L, 0L})
     void validateTransaction_invalidAmount_isBadRequest(Long amount) throws Exception {
         // given
-        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidationRequest(amount), objectMapper);
+        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount), objectMapper);
 
         // when
         var resultActions = mockMvc.perform(request);
@@ -58,8 +58,8 @@ public class TransactionValidationControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
 
-    private ValidationResponse getValidationResponse(ResultActions result) throws Exception {
+    private ValidateTransactionResponse getValidationResponse(ResultActions result) throws Exception {
         String responseAsString = result.andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(responseAsString, ValidationResponse.class);
+        return objectMapper.readValue(responseAsString, ValidateTransactionResponse.class);
     }
 }
