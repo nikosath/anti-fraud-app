@@ -5,6 +5,10 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Uri {
+    // * matches zero or more characters. For example, requestMatchers("/*") matches /, /abc, and /defg but not /ab/cd
+    public static final String ASTERISK = "/*";
+    // ** matches zero or more directories in a path. For example, requestMatchers("/**") matches /, /ab, /cd, and /a/b/c
+    public static final String DOUBLE_ASTERISK = "/**";
     public static final String API_AUTH_LIST = "/api/auth/list";
     public static final String API_AUTH_USER = "/api/auth/user";
     public static final String API_AUTH_ROLE = "/api/auth/role";

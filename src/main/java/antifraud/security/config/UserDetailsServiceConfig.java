@@ -18,8 +18,12 @@ public class UserDetailsServiceConfig {
 
     @Bean
     public UserDetailsService userDetailsService(IUserProfileStore store) {
-//        var user1 = UserProfile.with("Name1", "user1", passwordEncoder().encode("pass1"));
-//        store.save(user1);
+//        var adminUser = UserProfile.with("Admin1", "admin1", passwordEncoder().encode("admin-pass1"),
+//                SecurityRoleEnum.ADMINISTRATOR, true);
+//        var supportUser = UserProfile.with("Support1", "support1", passwordEncoder().encode("support-pass1"),
+//                SecurityRoleEnum.SUPPORT, true);
+//        store.save(adminUser);
+//        store.save(supportUser);
 
         return new UserDetailsService() {
             @Override
