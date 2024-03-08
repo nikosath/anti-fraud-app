@@ -16,7 +16,7 @@ public class AntifraudController {
 
     @PostMapping(Uri.API_ANTIFRAUD_TRANSACTION)
     public ResponseEntity<ValidateTransactionResponse> validateTransaction(@RequestBody ValidateTransactionRequest request) {
-        log.info("validateTransaction for request: " + request);
+        log.debug("validateTransaction for request: " + request);
         var validationResult = TransactionValidation.validateTransaction(request.amount());
         if (INVALID_AMOUNT.equals(validationResult)) {
             return ResponseEntity.badRequest().build();

@@ -8,17 +8,16 @@ import java.util.Optional;
  */
 public interface IUserProfileStore {
 
+    /**
+     * @param UserProfile with password that should be already encoded/encrypted
+     */
     UserProfile save(UserProfile userProfile);
-
-//    /**
-//     * @param encodedPassword should be encoded, i.e. encrypted
-//     */
-//    UserProfile save(String name, String username, String encodedPassword);
 
     Optional<UserProfile> findByUsernameIgnoreCase(String username);
 
     boolean existsByUsernameIgnoreCase(String username);
 
+    // TODO: consider using pagination with PagingAndSortingRepository or ListPagingAndSortingRepository
     List<UserProfile> findAllByOrderByIdAsc();
 
     Optional<UserProfile> deleteByUsernameIgnoreCase(String username);
