@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface IUserProfileStore {
 
     /**
-     * @param UserProfile with password that should be already encoded/encrypted
+     * @param userProfile with password that should be already encoded/encrypted
      */
     UserProfile save(UserProfile userProfile);
 
