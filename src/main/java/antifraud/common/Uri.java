@@ -23,4 +23,5 @@ public class Uri {
 
     public static final String H2_CONSOLE = "/h2-console/*";
     public static final String ACTUATOR_SHUTDOWN = "/actuator/shutdown";
+    public static final String ERROR = "/error";
 }

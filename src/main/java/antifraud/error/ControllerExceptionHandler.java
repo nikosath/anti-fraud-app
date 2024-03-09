@@ -1,4 +1,4 @@
-package antifraud.security.web;
+package antifraud.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

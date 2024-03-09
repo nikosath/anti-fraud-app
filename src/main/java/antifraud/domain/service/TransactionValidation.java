@@ -1,9 +1,10 @@
-package antifraud.domain;
+package antifraud.domain.service;
 
-import static antifraud.domain.TransactionValidation.ValidationResultEnum.*;
+import static antifraud.domain.service.TransactionValidation.ValidationResultEnum.*;
 
 public class TransactionValidation {
 
+    // TODO: move to AntifraudService
     public static ValidationResultEnum validateTransaction(long amount) {
         if (amount <= 0) {
             return INVALID_AMOUNT;

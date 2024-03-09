@@ -3,10 +3,10 @@ package antifraud.security.service;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
 import antifraud.security.LockOperationEnum;
-import antifraud.security.storage.IUserProfileStore;
-import antifraud.security.storage.SecurityRoleEnum;
-import antifraud.security.storage.UserProfile;
-import antifraud.security.storage.UserProfileFactory;
+import antifraud.security.datastore.IUserProfileStore;
+import antifraud.security.datastore.SecurityRoleEnum;
+import antifraud.security.datastore.UserProfile;
+import antifraud.security.datastore.UserProfileFactory;
 import io.vavr.control.Either;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static antifraud.error.ErrorEnum.*;
-import static antifraud.security.storage.SecurityRoleEnum.MERCHANT;
-import static antifraud.security.storage.SecurityRoleEnum.SUPPORT;
+import static antifraud.security.datastore.SecurityRoleEnum.MERCHANT;
+import static antifraud.security.datastore.SecurityRoleEnum.SUPPORT;
 
 @Slf4j
 @RequiredArgsConstructor

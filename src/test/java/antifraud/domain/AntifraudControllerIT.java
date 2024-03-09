@@ -1,8 +1,8 @@
 package antifraud.domain;
 
 import antifraud.common.Uri;
-import antifraud.domain.AntifraudController.ValidateTransactionRequest;
-import antifraud.domain.AntifraudController.ValidateTransactionResponse;
+import antifraud.domain.web.AntifraudController.ValidateTransactionRequest;
+import antifraud.domain.web.AntifraudController.ValidateTransactionResponse;
 import antifraud.security.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import static antifraud.domain.TransactionValidation.ValidationResultEnum.ALLOWED;
+import static antifraud.domain.service.TransactionValidation.ValidationResultEnum.ALLOWED;
 import static antifraud.security.LockOperationEnum.UNLOCK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

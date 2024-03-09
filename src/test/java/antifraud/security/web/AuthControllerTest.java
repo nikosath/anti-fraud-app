@@ -2,9 +2,9 @@ package antifraud.security.web;
 
 import antifraud.security.LockOperationEnum;
 import antifraud.security.config.SecurityFilterChainConfig;
+import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.service.FakeAuthService;
 import antifraud.security.service.FakeAuthService.BehaviorEnum;
-import antifraud.security.storage.SecurityRoleEnum;
 import antifraud.security.web.AuthController.LockStatusRequest;
 import antifraud.security.web.AuthController.UserRequest;
 import antifraud.security.web.AuthController.UserResponse;

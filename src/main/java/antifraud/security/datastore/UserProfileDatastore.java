@@ -1,4 +1,4 @@
-package antifraud.security.storage;
+package antifraud.security.datastore;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class UserProfileDbStore implements IUserProfileStore {
+public class UserProfileDatastore implements IUserProfileStore {
 
     private final IUserProfileJpaRepo repo;
 

@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.io.IOException;
 
-import static antifraud.security.storage.SecurityRoleEnum.*;
+import static antifraud.security.datastore.SecurityRoleEnum.*;
 
 @Slf4j
 @Configuration
@@ -44,31 +44,30 @@ public class SecurityFilterChainConfig {
                         handing -> handing.authenticationEntryPoint(authenticationEntryPoint())) // Handles auth error
                 .headers(headers -> headers.frameOptions().disable()) // for Postman, the H2 console
                 .authorizeHttpRequests(registry -> registry // manage access
-                                // auth
-                                .requestMatchers(HttpMethod.POST, Uri.API_AUTH_USER).permitAll()
-                                .requestMatchers(HttpMethod.DELETE, Uri.API_AUTH_USER + Uri.ASTERISK).hasRole(ADMINISTRATOR.name())
-                                .requestMatchers(HttpMethod.GET, Uri.API_AUTH_LIST).hasAnyRole(ADMINISTRATOR.name(),
-                                        SUPPORT.name())
-                                .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ACCESS).hasRole(ADMINISTRATOR.name())
-                                .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ROLE).hasRole(ADMINISTRATOR.name())
-                                // domain
-                                .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_TRANSACTION).hasRole(MERCHANT.name())
+                        // auth
+                        .requestMatchers(HttpMethod.POST, Uri.API_AUTH_USER).permitAll()
+                        .requestMatchers(HttpMethod.DELETE, Uri.API_AUTH_USER + Uri.ASTERISK).hasRole(ADMINISTRATOR.name())
+                        .requestMatchers(HttpMethod.GET, Uri.API_AUTH_LIST).hasAnyRole(ADMINISTRATOR.name(), SUPPORT.name())
+                        .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ACCESS).hasRole(ADMINISTRATOR.name())
+                        .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ROLE).hasRole(ADMINISTRATOR.name())
+                        // domain
+                        .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_TRANSACTION).hasRole(MERCHANT.name())
+                        .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
+                        .requestMatchers(HttpMethod.DELETE, Uri.API_ANTIFRAUD_SUSPICIOUS_IP + Uri.ASTERISK).hasRole(SUPPORT.name())
+                        .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
 
-                                .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
-                                .requestMatchers(HttpMethod.DELETE, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
-                                .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
-
-//                        .requestMatchers(
-//                                antMatcher(HttpMethod.POST, Uri.API_ANTIFRAUD_SUSPICIOUS_IP),
-//                                antMatcher(HttpMethod.DELETE, Uri.API_ANTIFRAUD_SUSPICIOUS_IP),
-//                                antMatcher(HttpMethod.GET, Uri.API_ANTIFRAUD_SUSPICIOUS_IP))
-//                      .permitAll()
-//                        .hasRole(SUPPORT.name())
-                                // other
-                                .requestMatchers(Uri.H2_CONSOLE).permitAll()
-                                .requestMatchers(Uri.ACTUATOR_SHUTDOWN).permitAll() // needs to run test
-//                                .anyRequest().permitAll()
-                                .anyRequest().denyAll()
+        //                        .requestMatchers(
+        //                                antMatcher(HttpMethod.POST, Uri.API_ANTIFRAUD_SUSPICIOUS_IP),
+        //                                antMatcher(HttpMethod.DELETE, Uri.API_ANTIFRAUD_SUSPICIOUS_IP),
+        //                                antMatcher(HttpMethod.GET, Uri.API_ANTIFRAUD_SUSPICIOUS_IP))
+        //                      .permitAll()
+        //                        .hasRole(SUPPORT.name())
+                        // other
+                        .requestMatchers(Uri.ERROR).permitAll()
+                        .requestMatchers(Uri.H2_CONSOLE).permitAll()
+                        .requestMatchers(Uri.ACTUATOR_SHUTDOWN).permitAll() // needs to run test
+        //                                .anyRequest().permitAll()
+                        .anyRequest().denyAll()
                 ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // no session
 //                .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())

@@ -3,9 +3,9 @@ package antifraud.security.service;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
 import antifraud.security.LockOperationEnum;
-import antifraud.security.storage.SecurityRoleEnum;
-import antifraud.security.storage.UserProfile;
-import antifraud.security.storage.UserProfileFactory;
+import antifraud.security.datastore.SecurityRoleEnum;
+import antifraud.security.datastore.UserProfile;
+import antifraud.security.datastore.UserProfileFactory;
 import io.vavr.control.Either;
 import lombok.Setter;
 

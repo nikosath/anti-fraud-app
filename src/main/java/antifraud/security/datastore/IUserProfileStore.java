@@ -1,8 +1,9 @@
-package antifraud.security.storage;
+package antifraud.security.datastore;
 
 import java.util.List;
 import java.util.Optional;
 
+// TODO: rename to IUserProfileDatastore
 /**
  * Storage for UserProfile, e.g. DB, in-memory
  */

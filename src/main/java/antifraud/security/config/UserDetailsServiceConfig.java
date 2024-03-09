@@ -1,7 +1,8 @@
 package antifraud.security.config;
 
-import antifraud.security.storage.IUserProfileStore;
-import antifraud.security.storage.UserProfile;
+import antifraud.security.datastore.IUserProfileStore;
+import antifraud.security.datastore.SecurityRoleEnum;
+import antifraud.security.datastore.UserProfile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +19,8 @@ public class UserDetailsServiceConfig {
 
     @Bean
     public UserDetailsService userDetailsService(IUserProfileStore store) {
-//        var adminUser = UserProfile.with("Admin1", "admin1", passwordEncoder().encode("admin-pass1"),
-//                SecurityRoleEnum.ADMINISTRATOR, true);
-//        var supportUser = UserProfile.with("Support1", "support1", passwordEncoder().encode("support-pass1"),
-//                SecurityRoleEnum.SUPPORT, true);
-//        store.save(adminUser);
-//        store.save(supportUser);
+        // TODO: remove createUsersForTesting once active development is finished
+        createUsersForTesting(store);
 
         return new UserDetailsService() {
             @Override
@@ -34,6 +31,15 @@ public class UserDetailsServiceConfig {
                 return userOpt.orElseThrow(() -> new UsernameNotFoundException("username not found"));
             }
         };
+    }
+
+    private void createUsersForTesting(IUserProfileStore store) {
+        var adminUser = UserProfile.with("Admin1", "admin1", passwordEncoder().encode("admin-pass1"),
+                SecurityRoleEnum.ADMINISTRATOR, true);
+        var supportUser = UserProfile.with("Support1", "support1", passwordEncoder().encode("support-pass1"),
+                SecurityRoleEnum.SUPPORT, true);
+        store.save(adminUser);
+        store.save(supportUser);
     }
 
     @Bean

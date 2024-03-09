@@ -1,4 +1,4 @@
-package antifraud.security.storage;
+package antifraud.security.datastore;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,11 +1,12 @@
 package antifraud.security.web;
 
 import antifraud.common.Uri;
+import antifraud.common.WebUtils;
 import antifraud.error.ErrorEnum;
 import antifraud.security.LockOperationEnum;
+import antifraud.security.datastore.SecurityRoleEnum;
+import antifraud.security.datastore.UserProfile;
 import antifraud.security.service.IAuthService;
-import antifraud.security.storage.SecurityRoleEnum;
-import antifraud.security.storage.UserProfile;
 import io.vavr.control.Either;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -17,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static antifraud.error.ErrorEnum.toHttpStatus;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,7 +32,7 @@ public class AuthController {
         Either<ErrorEnum, UserProfile> either = authService.createUser(req.name(), req.username(), req.password());
         return either.map(profile -> UserResponse.fromUserProfile(profile))
                 .map(userResponse -> ResponseEntity.status(HttpStatus.CREATED).body(userResponse))
-                .getOrElseGet(error -> toResponseEntity(error));
+                .getOrElseGet(error -> WebUtils.toResponseEntity(error));
     }
 
     @GetMapping(Uri.API_AUTH_LIST)
@@ -51,7 +50,7 @@ public class AuthController {
         Either<ErrorEnum, UserProfile> either = authService.deleteUser(username);
         return either.map(profile -> new DeleteResponse(profile.getUsername(), "Deleted successfully!"))
                 .map(resp -> ResponseEntity.ok(resp))
-                .getOrElseGet(error -> toResponseEntity(error));
+                .getOrElseGet(error -> WebUtils.toResponseEntity(error));
     }
 
     @PutMapping(Uri.API_AUTH_ROLE)
@@ -60,7 +59,7 @@ public class AuthController {
         Either<ErrorEnum, UserProfile> either = authService.updateUserRole(req.username(), req.role());
         return either.map(profile -> UserResponse.fromUserProfile(profile))
                 .map(userResponse -> ResponseEntity.status(HttpStatus.OK).body(userResponse))
-                .getOrElseGet(error -> toResponseEntity(error));
+                .getOrElseGet(error -> WebUtils.toResponseEntity(error));
     }
 
     @PutMapping(Uri.API_AUTH_ACCESS)
@@ -70,13 +69,13 @@ public class AuthController {
         // TODO: take username from updateUserLockStatus response
         return either.map(lockOperation -> new LockStatusResponse(req.username(), lockOperation))
                 .map(lockStatusResponse -> ResponseEntity.status(HttpStatus.OK).body(lockStatusResponse))
-                .getOrElseGet(error -> toResponseEntity(error));
+                .getOrElseGet(error -> WebUtils.toResponseEntity(error));
     }
 
     public record UserRequest(String name, @NotBlank String username, @NotBlank String password) {
     }
 
-    public record UserResponse(long id, String name, String username, SecurityRoleEnum role) {
+    public record UserResponse(Long id, String name, String username, SecurityRoleEnum role) {
         static UserResponse fromUserProfile(UserProfile user) {
             return new UserResponse(user.getId(), user.getName(), user.getUsername(), user.getRole());
         }
@@ -100,7 +99,4 @@ public class AuthController {
         }
     }
 
-    private static <R> ResponseEntity<R> toResponseEntity(ErrorEnum error) {
-        return ResponseEntity.status(toHttpStatus(error)).build();
-    }
 }

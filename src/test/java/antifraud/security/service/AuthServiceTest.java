@@ -2,9 +2,9 @@ package antifraud.security.service;
 
 import antifraud.error.ErrorEnum;
 import antifraud.security.config.UserPasswordEncoder;
-import antifraud.security.storage.InMemoryUserStore;
-import antifraud.security.storage.SecurityRoleEnum;
-import antifraud.security.storage.UserProfile;
+import antifraud.security.datastore.InMemoryUserStore;
+import antifraud.security.datastore.SecurityRoleEnum;
+import antifraud.security.datastore.UserProfile;
 import io.vavr.control.Either;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,9 @@
 package antifraud.domain;
 
-import antifraud.domain.AntifraudController.ValidateTransactionRequest;
-import antifraud.domain.AntifraudController.ValidateTransactionResponse;
-import antifraud.domain.TransactionValidation.ValidationResultEnum;
+import antifraud.domain.service.TransactionValidation.ValidationResultEnum;
+import antifraud.domain.web.AntifraudController;
+import antifraud.domain.web.AntifraudController.ValidateTransactionRequest;
+import antifraud.domain.web.AntifraudController.ValidateTransactionResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.params.ParameterizedTest;

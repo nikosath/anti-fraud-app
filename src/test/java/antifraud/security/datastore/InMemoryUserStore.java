@@ -1,10 +1,11 @@
-package antifraud.security.storage;
+package antifraud.security.datastore;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+// TODO: rename to FakeUserStore
 public class InMemoryUserStore implements IUserProfileStore {
 
     long idSequence = 0L;

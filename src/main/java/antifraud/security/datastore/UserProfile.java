@@ -1,4 +1,4 @@
-package antifraud.security.storage;
+package antifraud.security.datastore;
 
 import jakarta.persistence.*;
 import lombok.Getter;
