@@ -1,5 +1,6 @@
 package antifraud.domain;
 
+import antifraud.TestHelper;
 import antifraud.domain.datastore.FakeIpAddressEntityDatastore;
 import antifraud.domain.service.TransactionValidation.ValidationResultEnum;
 import antifraud.domain.web.AntifraudController;
@@ -10,6 +11,7 @@ import antifraud.domain.web.AntifraudController.ValidateTransactionResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,7 +23,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
-import static antifraud.TestUtils.*;
 import static antifraud.common.Uri.API_ANTIFRAUD_SUSPICIOUS_IP;
 import static antifraud.common.Uri.API_ANTIFRAUD_TRANSACTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,19 +38,25 @@ class AntifraudControllerTest {
     ObjectMapper objectMapper;
     @Autowired
     FakeIpAddressEntityDatastore datastore;
+    TestHelper testHelper;
+
+    @BeforeEach
+    void beforeEach() {
+        this.testHelper = new TestHelper(objectMapper);
+    }
 
     @Test
     @WithMockUser(roles = "MERCHANT")
     void validateTransaction_validAmount_allowed() throws Exception {
         // given
         long amount = 1L;
-        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount), objectMapper);
+        var request = testHelper.createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount));
         // when
         var resultActions = mockMvc.perform(request);
         // then
         resultActions.andExpect(status().isOk());
         assertEquals(ValidationResultEnum.ALLOWED,
-                deserializeToType(resultActions, ValidateTransactionResponse.class, objectMapper).result());
+                testHelper.deserializeToType(resultActions, ValidateTransactionResponse.class).result());
     }
 
     @Test
@@ -57,7 +64,7 @@ class AntifraudControllerTest {
     void validateTransaction_invalidAmount_badRequest() throws Exception {
         // given
         long amount = 0;
-        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount), objectMapper);
+        var request = testHelper.createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount));
         // when
         var resultActions = mockMvc.perform(request);
         // then
@@ -69,7 +76,7 @@ class AntifraudControllerTest {
     void validateTransaction_anonymousUser_unauthorized() throws Exception {
         // given
         long amount = 1L;
-        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount), objectMapper);
+        var request = testHelper.createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount));
         // when
         var resultActions = mockMvc.perform(request);
         // then
@@ -81,7 +88,7 @@ class AntifraudControllerTest {
     void createIpAddress_validIp_created() throws Exception {
         // given
         String ip = "169.254.123.229";
-        var request = createPostRequest(API_ANTIFRAUD_SUSPICIOUS_IP, new AntifraudController.IpAddressRequest(ip), objectMapper);
+        var request = testHelper.createPostRequest(API_ANTIFRAUD_SUSPICIOUS_IP, new AntifraudController.IpAddressRequest(ip));
         // when
         var resultActions = mockMvc.perform(request);
         // then
@@ -93,7 +100,7 @@ class AntifraudControllerTest {
     void createIpAddress_invalidIp_badRequest() throws Exception {
         // given
         String ip = null;
-        var request = createPostRequest(API_ANTIFRAUD_SUSPICIOUS_IP, new AntifraudController.IpAddressRequest(ip), objectMapper);
+        var request = testHelper.createPostRequest(API_ANTIFRAUD_SUSPICIOUS_IP, new AntifraudController.IpAddressRequest(ip));
         // when
         var resultActions = mockMvc.perform(request);
         // then
@@ -105,7 +112,7 @@ class AntifraudControllerTest {
     void createIpAddress_anonymousUser_unauthorized() throws Exception {
         // given
         String ip = "169.254.123.229";
-        var request = createPostRequest(API_ANTIFRAUD_SUSPICIOUS_IP, new AntifraudController.IpAddressRequest(ip), objectMapper);
+        var request = testHelper.createPostRequest(API_ANTIFRAUD_SUSPICIOUS_IP, new AntifraudController.IpAddressRequest(ip));
         // when
         var resultActions = mockMvc.perform(request);
         // then
@@ -127,7 +134,7 @@ class AntifraudControllerTest {
         resultActions.andExpect(status().isOk());
         var type = new TypeReference<List<IpAddressResponse>>() {
         };
-        List<IpAddressResponse> list = deserializeToCollectionType(resultActions, objectMapper, type);
+        List<IpAddressResponse> list = testHelper.deserializeToCollectionType(resultActions, type);
         assertEquals(2, list.size());
         assertEquals(ip1, list.get(0).ip());
         assertEquals(ip2, list.get(1).ip());
@@ -155,7 +162,7 @@ class AntifraudControllerTest {
         var resultActions = mockMvc.perform(request);
         // then
         resultActions.andExpect(status().isOk());
-        var deleteIpResponse = deserializeToType(resultActions, DeleteIpResponse.class, objectMapper);
+        var deleteIpResponse = testHelper.deserializeToType(resultActions, DeleteIpResponse.class);
         assertEquals("IP %s successfully removed!".formatted(ip), deleteIpResponse.status());
     }
 

@@ -1,5 +1,6 @@
 package antifraud.security.web;
 
+import antifraud.TestHelper;
 import antifraud.security.LockOperationEnum;
 import antifraud.security.config.SecurityFilterChainConfig;
 import antifraud.security.datastore.SecurityRoleEnum;
@@ -11,6 +12,7 @@ import antifraud.security.web.AuthController.UserResponse;
 import antifraud.security.web.AuthController.UserRoleRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static antifraud.TestUtils.*;
 import static antifraud.common.Uri.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -38,13 +39,19 @@ class AuthControllerTest {
     ObjectMapper objectMapper;
     @Autowired
     FakeAuthService fakeAuthService;
+    TestHelper testHelper;
+
+    @BeforeEach
+    void beforeEach() {
+        this.testHelper = new TestHelper(objectMapper);
+    }
 
     @Test
     void createUser_succeeds() throws Exception {
         // given
         fakeAuthService.setCreateUserBehavior(BehaviorEnum.SUCCEEDS);
         var payload = new UserRequest("Name2", "user2", "pass2");
-        var request = createPostRequest(API_AUTH_USER, payload, objectMapper);
+        var request = testHelper.createPostRequest(API_AUTH_USER, payload);
 
         // when
         mockMvc.perform(request)
@@ -67,7 +74,7 @@ class AuthControllerTest {
         resultActions.andExpect(status().isOk());
         var type = new TypeReference<List<UserResponse>>() {
         };
-        List<UserResponse> list = deserializeToCollectionType(resultActions, objectMapper, type);
+        List<UserResponse> list = testHelper.deserializeToCollectionType(resultActions, type);
         assertEquals(2, list.size());
     }
 
@@ -91,7 +98,7 @@ class AuthControllerTest {
     void updateUserRole_withAuthorizedUser_succeeds() throws Exception {
         fakeAuthService.setUpdateUserRoleBehavior(BehaviorEnum.SUCCEEDS);
         var payload = new UserRoleRequest("user1", SecurityRoleEnum.MERCHANT);
-        var request = createPutRequest(API_AUTH_ROLE, payload, objectMapper);
+        var request = testHelper.createPutRequest(API_AUTH_ROLE, payload);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
@@ -102,7 +109,7 @@ class AuthControllerTest {
     void updateUserLockStatus_withAuthorizedUser_succeeds() throws Exception {
         fakeAuthService.setUpdateUserLockStatusBehavior(BehaviorEnum.SUCCEEDS);
         var payload = new LockStatusRequest("user1", LockOperationEnum.UNLOCK);
-        var request = createPutRequest(API_AUTH_ACCESS, payload, objectMapper);
+        var request = testHelper.createPutRequest(API_AUTH_ACCESS, payload);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
