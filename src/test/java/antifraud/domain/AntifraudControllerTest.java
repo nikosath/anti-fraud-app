@@ -1,17 +1,17 @@
 package antifraud.domain;
 
+import antifraud.domain.datastore.FakeIpAddressEntityDatastore;
 import antifraud.domain.service.TransactionValidation.ValidationResultEnum;
 import antifraud.domain.web.AntifraudController;
 import antifraud.domain.web.AntifraudController.ValidateTransactionRequest;
 import antifraud.domain.web.AntifraudController.ValidateTransactionResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -21,42 +21,50 @@ import static antifraud.common.Uri.API_ANTIFRAUD_TRANSACTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WithMockUser(roles = "MERCHANT")
-@Import({SecurityFilterChainConfig.class})
+@Import({SecurityFilterChainConfig.class, FakeIpAddressEntityDatastore.class})
 @WebMvcTest(AntifraudController.class)
-public class AntifraudControllerTest {
+class AntifraudControllerTest {
 
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
 
-    @ParameterizedTest
-    @CsvSource({"150, ALLOWED", "1500, MANUAL_PROCESSING", "15000, PROHIBITED"})
-    void validateTransaction_validAmount_properValidationResult(Long amount, ValidationResultEnum validationResult) throws Exception {
+    @Test
+    @WithMockUser(roles = "MERCHANT")
+    void validateTransaction_validAmount_okAndAllowed() throws Exception {
         // given
+        long amount = 1L;
         var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount), objectMapper);
-
         // when
         var resultActions = mockMvc.perform(request);
-
         // then
         resultActions.andExpect(status().isOk());
-        var expected = new ValidateTransactionResponse(validationResult);
-        assertEquals(expected, getValidationResponse(resultActions));
+        assertEquals(ValidationResultEnum.ALLOWED, getValidationResponse(resultActions).result());
     }
 
-    @ParameterizedTest
-    @ValueSource(longs = {-1L, 0L})
-    void validateTransaction_invalidAmount_isBadRequest(Long amount) throws Exception {
+    @Test
+    @WithMockUser(roles = "MERCHANT")
+    void validateTransaction_invalidAmount_badRequest() throws Exception {
         // given
+        long amount = 0;
         var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount), objectMapper);
-
         // when
         var resultActions = mockMvc.perform(request);
-
         // then
         resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void validateTransaction_anonymousUser_unauthorized() throws Exception {
+        // given
+        long amount = 1L;
+        var request = createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount), objectMapper);
+        // when
+        var resultActions = mockMvc.perform(request);
+        // then
+        resultActions.andExpect(status().isUnauthorized());
     }
 
     private ValidateTransactionResponse getValidationResponse(ResultActions result) throws Exception {

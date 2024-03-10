@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-// TODO: rename to FakeUserStore
-public class InMemoryUserStore implements IUserProfileStore {
+public class FakeUserProfileDatastore implements IUserProfileStore {
 
     long idSequence = 0L;
     Map<Long, UserProfile> idToUserProfile = new HashMap<>();
@@ -25,17 +24,17 @@ public class InMemoryUserStore implements IUserProfileStore {
     }
 
     @Override
-    public Optional<UserProfile> findByUsernameIgnoreCase(String username) {
+    public synchronized Optional<UserProfile> findByUsernameIgnoreCase(String username) {
         return Optional.of(usernameToUserProfile.get(username));
     }
 
     @Override
-    public boolean existsByUsernameIgnoreCase(String username) {
+    public synchronized boolean existsByUsernameIgnoreCase(String username) {
         return usernameToUserProfile.containsKey(username);
     }
 
     @Override
-    public List<UserProfile> findAllByOrderByIdAsc() {
+    public synchronized List<UserProfile> findAllByOrderByIdAsc() {
         return idToUserProfile.values().stream().sorted().toList();
     }
 
@@ -53,7 +52,7 @@ public class InMemoryUserStore implements IUserProfileStore {
     }
 
     @Override
-    public long count() {
+    public synchronized long count() {
         return idToUserProfile.size();
     }
 }

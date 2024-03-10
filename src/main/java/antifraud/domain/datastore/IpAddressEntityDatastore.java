@@ -1,7 +1,7 @@
 package antifraud.domain.datastore;
 
-import antifraud.error.AntifraudException;
 import antifraud.error.ErrorEnum;
+import antifraud.error.FailedPreconditionException;
 import antifraud.error.Result;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class IpAddressEntityDatastore implements IIpAddressEntityDatastore {
     public Either<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip) {
         long countByIp = repo.countByIp(ip);
         if (countByIp > 1) {
-            throw new AntifraudException(MULTIPLE_ENTITIES_FOUND);
+            throw new FailedPreconditionException(MULTIPLE_ENTITIES_FOUND);
         }
         if (countByIp == 0) {
             return Result.error(ENTITY_NOT_FOUND);

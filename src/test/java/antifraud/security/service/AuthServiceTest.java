@@ -2,7 +2,7 @@ package antifraud.security.service;
 
 import antifraud.error.ErrorEnum;
 import antifraud.security.config.UserPasswordEncoder;
-import antifraud.security.datastore.InMemoryUserStore;
+import antifraud.security.datastore.FakeUserProfileDatastore;
 import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.datastore.UserProfile;
 import io.vavr.control.Either;
@@ -17,7 +17,7 @@ class AuthServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        authService = new AuthService(new InMemoryUserStore(), new UserPasswordEncoder());
+        authService = new AuthService(new FakeUserProfileDatastore(), new UserPasswordEncoder());
     }
 
     @Test
