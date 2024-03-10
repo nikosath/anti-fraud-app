@@ -1,7 +1,6 @@
 # Anti-fraud app with Spring Security
 Work in progress. Less than halfway done. You can review the project with GitHub's IDE https://github.dev/nikosath/anti-fraud-app.
 
-The project is built based on specs provided by https://hyperskill.org/.
 ## I am experimenting with:
   - Testing with reusable custom fake objects (e.g. [FakeAuthService](src/test/java/antifraud/security/service/FakeAuthService.java)) instead of framework mocks e.g. Mockito mocks.
 - [Vavr's Either type](https://docs.vavr.io/#_either) for more functional error handling. I throw custom Runtime exceptions only in cases where I'd want to return a 5xx error. 
