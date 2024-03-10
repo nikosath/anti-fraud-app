@@ -20,7 +20,7 @@ public class UserDetailsServiceConfig {
     @Bean
     public UserDetailsService userDetailsService(IUserProfileStore store) {
         // TODO: remove createUsersForTesting once active development is finished
-        createUsersForTesting(store);
+//        createUsersForTesting(store);
 
         return new UserDetailsService() {
             @Override

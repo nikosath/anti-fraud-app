@@ -12,7 +12,7 @@ public interface IIpAddressEntityDatastore {
 
     boolean existsByIp(String ip);
 
-    List<IpAddressEntity> getAllIpAddresses();
+    List<IpAddressEntity> getAllIpAddressesOrderById();
 
     Either<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip);
 

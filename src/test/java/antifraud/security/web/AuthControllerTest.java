@@ -17,12 +17,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
-import static antifraud.TestUtils.createPostRequest;
-import static antifraud.TestUtils.createPutRequest;
+import static antifraud.TestUtils.*;
 import static antifraud.common.Uri.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -67,13 +65,10 @@ class AuthControllerTest {
         var resultActions = mockMvc.perform(get(API_AUTH_LIST));
 
         resultActions.andExpect(status().isOk());
-        assertEquals(2, getList(resultActions).size());
-    }
-
-    private List<UserResponse> getList(ResultActions result) throws Exception {
-        String responseAsString = result.andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(responseAsString, new TypeReference<>() {
-        });
+        var type = new TypeReference<List<UserResponse>>() {
+        };
+        List<UserResponse> list = deserializeToCollectionType(resultActions, objectMapper, type);
+        assertEquals(2, list.size());
     }
 
     @Test

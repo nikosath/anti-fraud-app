@@ -12,4 +12,6 @@ public interface IpAddressEntityRepo extends ListCrudRepository<IpAddressEntity,
 
     long countByIp(String ip);
 
+    List<IpAddressEntity> findAllByOrderByIdAsc();
+
 }

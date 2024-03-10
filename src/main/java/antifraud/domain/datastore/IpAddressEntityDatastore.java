@@ -37,8 +37,8 @@ public class IpAddressEntityDatastore implements IIpAddressEntityDatastore {
     }
 
     @Override
-    public List<IpAddressEntity> getAllIpAddresses() {
-        return repo.findAll();
+    public List<IpAddressEntity> getAllIpAddressesOrderById() {
+        return repo.findAllByOrderByIdAsc();
     }
 
     @Override

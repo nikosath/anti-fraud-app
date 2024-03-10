@@ -35,8 +35,8 @@ public class FakeIpAddressEntityDatastore implements IIpAddressEntityDatastore {
     }
 
     @Override
-    public synchronized List<IpAddressEntity> getAllIpAddresses() {
-        return ipToIpAddressEntity.values().stream().toList();
+    public synchronized List<IpAddressEntity> getAllIpAddressesOrderById() {
+        return ipToIpAddressEntity.values().stream().sorted().toList();
     }
 
     @Override

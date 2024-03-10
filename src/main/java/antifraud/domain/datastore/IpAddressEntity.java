@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class IpAddressEntity {
+public class IpAddressEntity implements Comparable<IpAddressEntity> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +24,10 @@ public class IpAddressEntity {
 
     public static IpAddressEntity withIp(String ip) {
         return new IpAddressEntity(ip);
+    }
+
+    @Override
+    public int compareTo(@NotNull IpAddressEntity other) {
+        return Long.compare(this.getId(), other.getId());
     }
 }
