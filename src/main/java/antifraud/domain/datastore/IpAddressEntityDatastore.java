@@ -3,7 +3,6 @@ package antifraud.domain.datastore;
 import antifraud.error.ErrorEnum;
 import antifraud.error.FailedPreconditionException;
 import antifraud.error.Result;
-import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +17,7 @@ public class IpAddressEntityDatastore implements IIpAddressEntityDatastore {
     private final IpAddressEntityRepo repo;
 
     @Override
-    public Either<ErrorEnum, IpAddressEntity> createIpAddress(String ip) {
+    public Result<ErrorEnum, IpAddressEntity> createIpAddress(String ip) {
         if (repo.existsByIp(ip)) {
             return Result.error(ENTITY_ALREADY_EXISTS);
         }
@@ -42,7 +41,7 @@ public class IpAddressEntityDatastore implements IIpAddressEntityDatastore {
     }
 
     @Override
-    public Either<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip) {
+    public Result<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip) {
         long countByIp = repo.countByIp(ip);
         if (countByIp > 1) {
             throw new FailedPreconditionException(MULTIPLE_ENTITIES_FOUND);

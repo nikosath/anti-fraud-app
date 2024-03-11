@@ -1,11 +1,11 @@
 package antifraud.security.service;
 
 import antifraud.error.ErrorEnum;
+import antifraud.error.Result;
 import antifraud.security.config.UserPasswordEncoder;
 import antifraud.security.datastore.FakeUserProfileDatastore;
 import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.datastore.UserProfile;
-import io.vavr.control.Either;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +26,9 @@ class AuthServiceTest {
         authService.createUser("Name1", "user1", "pass1"); // create MERCHANT
 
         SecurityRoleEnum role = SecurityRoleEnum.SUPPORT;
-        Either<ErrorEnum, UserProfile> either = authService.updateUserRole("user1", role);
+        Result<ErrorEnum, UserProfile> result = authService.updateUserRole("user1", role);
 
-        assertEquals(role, either.get().getRole());
+        assertEquals(role, result.getSuccess().getRole());
     }
 
 }

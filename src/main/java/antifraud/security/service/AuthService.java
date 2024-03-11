@@ -7,7 +7,6 @@ import antifraud.security.datastore.IUserProfileStore;
 import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.datastore.UserProfile;
 import antifraud.security.datastore.UserProfileFactory;
-import io.vavr.control.Either;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,7 @@ public class AuthService extends IAuthService {
     }
 
     @Override
-    public Either<ErrorEnum, UserProfile> createUser(String name, String username, String password) {
+    public Result<ErrorEnum, UserProfile> createUser(String name, String username, String password) {
         if (userProfileStore.existsByUsernameIgnoreCase(username)) {
             return Result.error(ENTITY_ALREADY_EXISTS);
         }
@@ -62,7 +61,7 @@ public class AuthService extends IAuthService {
     }
 
     @Override
-    public Either<ErrorEnum, UserProfile> deleteUser(String username) {
+    public Result<ErrorEnum, UserProfile> deleteUser(String username) {
         if (!userProfileStore.existsByUsernameIgnoreCase(username)) {
             return Result.error(ENTITY_NOT_FOUND);
         }
@@ -71,16 +70,18 @@ public class AuthService extends IAuthService {
     }
 
     @Override
-    public Either<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
-        Either<ErrorEnum, UserProfile> either = validateAndGetUser(username, role);
-        return either.map(user -> {
+    public Result<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
+        Result<ErrorEnum, UserProfile> result = validateAndGetUser(username, role);
+        if (result.isSuccess()) {
+            UserProfile user = result.getSuccess();
             user.setRole(role);
-            return userProfileStore.save(user);
-        });
+            return Result.success(userProfileStore.save(user));
+        }
+        return result;
     }
 
     @Override
-    public Either<ErrorEnum, LockOperationEnum> updateUserLockStatus(String username, LockOperationEnum operation) {
+    public Result<ErrorEnum, LockOperationEnum> updateUserLockStatus(String username, LockOperationEnum operation) {
         Optional<UserProfile> userOpt = userProfileStore.findByUsernameIgnoreCase(username);
         if (userOpt.isEmpty()) {
             return Result.error(ENTITY_NOT_FOUND);
@@ -94,7 +95,7 @@ public class AuthService extends IAuthService {
         return Result.success(LockOperationEnum.fromIsAccountUnlocked(saved.isAccountNonLocked()));
     }
 
-    private Either<ErrorEnum, UserProfile> validateAndGetUser(String username, SecurityRoleEnum role) {
+    private Result<ErrorEnum, UserProfile> validateAndGetUser(String username, SecurityRoleEnum role) {
         if (!ALLOWED_ROLES.contains(role)) {
             // TODO: add error msg to Result
 //            return Result.error(ARGUMENT_NOT_VALID, "Allowed roles: " + ALLOWED_ROLES);

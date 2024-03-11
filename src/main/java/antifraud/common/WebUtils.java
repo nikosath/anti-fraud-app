@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class WebUtils {
-    public static <R> ResponseEntity<R> toResponseEntity(ErrorEnum error) {
+    public static <R> ResponseEntity<R> errorToResponseEntity(ErrorEnum error) {
         return ResponseEntity.status(toHttpStatus(error)).build();
     }
 

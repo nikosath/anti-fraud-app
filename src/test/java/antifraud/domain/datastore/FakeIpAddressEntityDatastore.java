@@ -2,7 +2,6 @@ package antifraud.domain.datastore;
 
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
-import io.vavr.control.Either;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,7 @@ public class FakeIpAddressEntityDatastore implements IIpAddressEntityDatastore {
     private Map<String, IpAddressEntity> ipToIpAddressEntity = new HashMap<>();
 
     @Override
-    public synchronized Either<ErrorEnum, IpAddressEntity> createIpAddress(String ip) {
+    public synchronized Result<ErrorEnum, IpAddressEntity> createIpAddress(String ip) {
         IpAddressEntity entity = IpAddressEntity.withIp(ip);
         idSequence += 1;
         entity.setId(idSequence);
@@ -40,7 +39,7 @@ public class FakeIpAddressEntityDatastore implements IIpAddressEntityDatastore {
     }
 
     @Override
-    public synchronized Either<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip) {
+    public synchronized Result<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip) {
         IpAddressEntity entity = ipToIpAddressEntity.get(ip);
         if (entity == null) {
             return Result.error(ErrorEnum.ENTITY_NOT_FOUND);

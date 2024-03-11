@@ -3,11 +3,11 @@ package antifraud.security.web;
 import antifraud.common.Uri;
 import antifraud.common.WebUtils;
 import antifraud.error.ErrorEnum;
+import antifraud.error.Result;
 import antifraud.security.LockOperationEnum;
 import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.datastore.UserProfile;
 import antifraud.security.service.IAuthService;
-import io.vavr.control.Either;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,10 +29,12 @@ public class AuthController {
     @PostMapping(Uri.API_AUTH_USER)
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest req) {
         log.debug("createUser req = " + req);
-        Either<ErrorEnum, UserProfile> either = authService.createUser(req.name(), req.username(), req.password());
-        return either.map(profile -> UserResponse.fromUserProfile(profile))
-                .map(userResponse -> ResponseEntity.status(HttpStatus.CREATED).body(userResponse))
-                .getOrElseGet(error -> WebUtils.toResponseEntity(error));
+        Result<ErrorEnum, UserProfile> result = authService.createUser(req.name(), req.username(), req.password());
+        if (result.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(UserResponse.fromUserProfile(result.getSuccess()));
+        }
+        return WebUtils.errorToResponseEntity(result.getError());
     }
 
     @GetMapping(Uri.API_AUTH_LIST)
@@ -40,36 +42,40 @@ public class AuthController {
         log.debug("listUsers");
         List<UserProfile> userProfiles = authService.listUsers();
         return userProfiles.stream()
-                .map(userProfile -> UserResponse.fromUserProfile(userProfile))
+                .map(UserResponse::fromUserProfile)
                 .toList();
     }
 
     @DeleteMapping(Uri.API_AUTH_USER + Uri.USERNAME)
     public ResponseEntity<DeleteResponse> deleteUser(@PathVariable String username) {
         log.debug("deleteUser username = " + username);
-        Either<ErrorEnum, UserProfile> either = authService.deleteUser(username);
-        return either.map(profile -> new DeleteResponse(profile.getUsername(), "Deleted successfully!"))
-                .map(resp -> ResponseEntity.ok(resp))
-                .getOrElseGet(error -> WebUtils.toResponseEntity(error));
+        Result<ErrorEnum, UserProfile> result = authService.deleteUser(username);
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(
+                    new DeleteResponse(result.getSuccess().getUsername(), "Deleted successfully!"));
+        }
+        return WebUtils.errorToResponseEntity(result.getError());
     }
 
     @PutMapping(Uri.API_AUTH_ROLE)
     public ResponseEntity<UserResponse> updateUserRole(@Valid @RequestBody UserRoleRequest req) {
         log.debug("updateUserRole req = " + req);
-        Either<ErrorEnum, UserProfile> either = authService.updateUserRole(req.username(), req.role());
-        return either.map(profile -> UserResponse.fromUserProfile(profile))
-                .map(userResponse -> ResponseEntity.status(HttpStatus.OK).body(userResponse))
-                .getOrElseGet(error -> WebUtils.toResponseEntity(error));
+        Result<ErrorEnum, UserProfile> result = authService.updateUserRole(req.username(), req.role());
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(UserResponse.fromUserProfile(result.getSuccess()));
+        }
+        return WebUtils.errorToResponseEntity(result.getError());
     }
 
     @PutMapping(Uri.API_AUTH_ACCESS)
     public ResponseEntity<LockStatusResponse> updateUserLockStatus(@Valid @RequestBody LockStatusRequest req) {
         log.debug("updateUserLockStatus req = " + req);
-        Either<ErrorEnum, LockOperationEnum> either = authService.updateUserLockStatus(req.username(), req.operation());
-        // TODO: take username from updateUserLockStatus response
-        return either.map(lockOperation -> new LockStatusResponse(req.username(), lockOperation))
-                .map(lockStatusResponse -> ResponseEntity.status(HttpStatus.OK).body(lockStatusResponse))
-                .getOrElseGet(error -> WebUtils.toResponseEntity(error));
+        Result<ErrorEnum, LockOperationEnum> result = authService.updateUserLockStatus(req.username(), req.operation());
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(
+                    new LockStatusResponse(req.username(), result.getSuccess()));
+        }
+        return WebUtils.errorToResponseEntity(result.getError());
     }
 
     public record UserRequest(String name, @NotBlank String username, @NotBlank String password) {

@@ -1,12 +1,12 @@
 package antifraud.domain.datastore;
 
 import antifraud.error.ErrorEnum;
-import io.vavr.control.Either;
+import antifraud.error.Result;
 
 import java.util.List;
 
 public interface IIpAddressEntityDatastore {
-    Either<ErrorEnum, IpAddressEntity> createIpAddress(String ip);
+    Result<ErrorEnum, IpAddressEntity> createIpAddress(String ip);
 
     long countByIp(String ip);
 
@@ -14,6 +14,6 @@ public interface IIpAddressEntityDatastore {
 
     List<IpAddressEntity> getAllIpAddressesOrderById();
 
-    Either<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip);
+    Result<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip);
 
 }

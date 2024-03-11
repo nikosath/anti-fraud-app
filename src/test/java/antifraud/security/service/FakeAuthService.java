@@ -6,7 +6,6 @@ import antifraud.security.LockOperationEnum;
 import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.datastore.UserProfile;
 import antifraud.security.datastore.UserProfileFactory;
-import io.vavr.control.Either;
 import lombok.Setter;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class FakeAuthService extends IAuthService {
     private BehaviorEnum updateUserLockStatusBehavior;
 
     @Override
-    public Either<ErrorEnum, UserProfile> createUser(String name, String username, String password) {
+    public Result<ErrorEnum, UserProfile> createUser(String name, String username, String password) {
         if (createUserBehavior == BehaviorEnum.SUCCEEDS) {
             UserProfile userProfile = UserProfile.with(name, username, password, SecurityRoleEnum.MERCHANT, true);
             userProfile.setId(1L);
@@ -44,7 +43,7 @@ public class FakeAuthService extends IAuthService {
     }
 
     @Override
-    public Either<ErrorEnum, UserProfile> deleteUser(String username) {
+    public Result<ErrorEnum, UserProfile> deleteUser(String username) {
         if (deleteUserBehavior == BehaviorEnum.SUCCEEDS) {
             var user1 = UserProfileFactory.newAdmin("Name1", "user1", "pass1");
             return Result.success(user1);
@@ -53,7 +52,7 @@ public class FakeAuthService extends IAuthService {
     }
 
     @Override
-    public Either<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
+    public Result<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
         if (updateUserRoleBehavior == BehaviorEnum.SUCCEEDS) {
             var user1 = UserProfileFactory.newAdmin("Name1", "user1", "pass1");
             user1.setId(1L);
@@ -63,7 +62,7 @@ public class FakeAuthService extends IAuthService {
     }
 
     @Override
-    public Either<ErrorEnum, LockOperationEnum> updateUserLockStatus(String username, LockOperationEnum operation) {
+    public Result<ErrorEnum, LockOperationEnum> updateUserLockStatus(String username, LockOperationEnum operation) {
         if (updateUserLockStatusBehavior == BehaviorEnum.SUCCEEDS) {
             return Result.success(operation);
         }

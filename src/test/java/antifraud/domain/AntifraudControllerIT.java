@@ -33,7 +33,7 @@ public class AntifraudControllerIT {
         // create first user: ADMINISTRATOR
         authService.createUser("Mr.User0", "user0", "pass0");
         // create next user: MERCHANT
-        authService.createUser("Mr.User1", MERCHANT_USERNAME, MERCHANT_PASSWORD).get();
+        authService.createUser("Mr.User1", MERCHANT_USERNAME, MERCHANT_PASSWORD);
         // unlock merchant
         authService.updateUserLockStatus("user1", UNLOCK);
     }
