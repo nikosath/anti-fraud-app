@@ -7,7 +7,7 @@ import antifraud.domain.web.AntifraudController.ValidateTransactionRequest;
 import antifraud.domain.web.AntifraudController.ValidateTransactionResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,13 +26,11 @@ class AntifraudControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-    @Autowired
-    ObjectMapper objectMapper;
-    TestHelper testHelper;
+    static TestHelper testHelper;
 
-    @BeforeEach
-    void beforeEach() {
-        this.testHelper = new TestHelper(objectMapper);
+    @BeforeAll
+    static void beforeAll(@Autowired ObjectMapper objectMapper) {
+        testHelper = new TestHelper(objectMapper);
     }
 
     @Test

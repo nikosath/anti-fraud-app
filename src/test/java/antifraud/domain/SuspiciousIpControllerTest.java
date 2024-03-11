@@ -8,7 +8,7 @@ import antifraud.domain.web.SuspiciousIpController.IpAddressResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,14 +31,12 @@ class SuspiciousIpControllerTest {
     @Autowired
     MockMvc mockMvc;
     @Autowired
-    ObjectMapper objectMapper;
-    @Autowired
     FakeIpAddressEntityDatastore datastore;
-    TestHelper testHelper;
+    static TestHelper testHelper;
 
-    @BeforeEach
-    void beforeEach() {
-        this.testHelper = new TestHelper(objectMapper);
+    @BeforeAll
+    static void beforeAll(@Autowired ObjectMapper objectMapper) {
+        testHelper = new TestHelper(objectMapper);
     }
 
     @Test
