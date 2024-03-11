@@ -4,7 +4,7 @@ import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.List;
 
-public interface IpAddressEntityRepo extends ListCrudRepository<IpAddressEntity, Long> {
+public interface IIpAddressEntityRepo extends ListCrudRepository<IpAddressEntity, Long> {
 
     boolean existsByIp(String ip);
 

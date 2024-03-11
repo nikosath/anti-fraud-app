@@ -18,10 +18,12 @@ public class Uri {
     public static final String API_ANTIFRAUD = "/api/antifraud";
     public static final String API_ANTIFRAUD_TRANSACTION = "/api/antifraud/transaction";
     public static final String API_ANTIFRAUD_SUSPICIOUS_IP = "/api/antifraud/suspicious-ip";
-    public static final String API_ANTIFRAUD_STOLENCARD = "/api/antifraud/stolencard";
     public static final String IP = "/{ip}";
+    public static final String API_ANTIFRAUD_STOLENCARD = "/api/antifraud/stolencard";
+    public static final String CARD_NUMBER = "/{cardNumber}" ;
 
     public static final String H2_CONSOLE = "/h2-console/*";
     public static final String ACTUATOR_SHUTDOWN = "/actuator/shutdown";
     public static final String ERROR = "/error";
+
 }

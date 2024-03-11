@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SuspiciousIpController {
 
-    public static final String IP_ADDRESS_REGEXP = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
+    private static final String IP_ADDRESS_REGEXP = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
     private final IIpAddressEntityDatastore datastore;
 
     @PostMapping(Uri.API_ANTIFRAUD_SUSPICIOUS_IP)

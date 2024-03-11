@@ -127,7 +127,6 @@ class SuspiciousIpControllerTest {
     void deleteIpAddress_invalidIp_badRequest() throws Exception {
         // given
         String ip = "169.254.123.01";
-        datastore.createIpAddress(ip);
         // when
         var request = MockMvcRequestBuilders.delete(API_ANTIFRAUD_SUSPICIOUS_IP + "/%s".formatted(ip));
         var resultActions = mockMvc.perform(request);

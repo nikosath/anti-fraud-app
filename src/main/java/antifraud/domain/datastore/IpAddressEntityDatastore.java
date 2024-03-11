@@ -14,7 +14,7 @@ import static antifraud.error.ErrorEnum.*;
 @RequiredArgsConstructor
 public class IpAddressEntityDatastore implements IIpAddressEntityDatastore {
 
-    private final IpAddressEntityRepo repo;
+    private final IIpAddressEntityRepo repo;
 
     @Override
     public Result<ErrorEnum, IpAddressEntity> createIpAddress(String ip) {

@@ -50,18 +50,16 @@ public class SecurityFilterChainConfig {
                         .requestMatchers(HttpMethod.GET, Uri.API_AUTH_LIST).hasAnyRole(ADMINISTRATOR.name(), SUPPORT.name())
                         .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ACCESS).hasRole(ADMINISTRATOR.name())
                         .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ROLE).hasRole(ADMINISTRATOR.name())
-                        // domain
+                        // API_ANTIFRAUD_TRANSACTION
                         .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_TRANSACTION).hasRole(MERCHANT.name())
+                        // API_ANTIFRAUD_SUSPICIOUS_IP
                         .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
                         .requestMatchers(HttpMethod.DELETE, Uri.API_ANTIFRAUD_SUSPICIOUS_IP + Uri.ASTERISK).hasRole(SUPPORT.name())
                         .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
-
-        //                        .requestMatchers(
-        //                                antMatcher(HttpMethod.POST, Uri.API_ANTIFRAUD_SUSPICIOUS_IP),
-        //                                antMatcher(HttpMethod.DELETE, Uri.API_ANTIFRAUD_SUSPICIOUS_IP),
-        //                                antMatcher(HttpMethod.GET, Uri.API_ANTIFRAUD_SUSPICIOUS_IP))
-        //                      .permitAll()
-        //                        .hasRole(SUPPORT.name())
+                        // API_ANTIFRAUD_STOLENCARD
+                        .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_STOLENCARD).hasRole(SUPPORT.name())
+                        .requestMatchers(HttpMethod.DELETE, Uri.API_ANTIFRAUD_STOLENCARD + Uri.ASTERISK).hasRole(SUPPORT.name())
+                        .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_STOLENCARD).hasRole(SUPPORT.name())
                         // other
                         .requestMatchers(Uri.ERROR).permitAll()
                         .requestMatchers(Uri.H2_CONSOLE).permitAll()
