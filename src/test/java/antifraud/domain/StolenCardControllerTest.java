@@ -50,7 +50,7 @@ class StolenCardControllerTest {
         // when
         var resultActions = mockMvc.perform(request);
         // then
-        resultActions.andExpect(status().isCreated());
+        resultActions.andExpect(status().isOk());
     }
 
     @Test
@@ -94,8 +94,8 @@ class StolenCardControllerTest {
         };
         List<StolenCardResponse> list = testHelper.deserializeToCollectionType(resultActions, type);
         assertEquals(2, list.size());
-        assertEquals(cardNumber1, list.get(0).cardNumber());
-        assertEquals(cardNumber2, list.get(1).cardNumber());
+        assertEquals(cardNumber1, list.get(0).number());
+        assertEquals(cardNumber2, list.get(1).number());
     }
 
     @Test

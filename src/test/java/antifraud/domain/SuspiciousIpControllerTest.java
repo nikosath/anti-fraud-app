@@ -48,7 +48,7 @@ class SuspiciousIpControllerTest {
         // when
         var resultActions = mockMvc.perform(request);
         // then
-        resultActions.andExpect(status().isCreated());
+        resultActions.andExpect(status().isOk());
     }
 
     @Test
@@ -126,7 +126,7 @@ class SuspiciousIpControllerTest {
     @WithMockUser(roles = "SUPPORT")
     void deleteIpAddress_invalidIp_badRequest() throws Exception {
         // given
-        String ip = "169.254.123.01";
+        String ip = "192.168.1.";
         // when
         var request = MockMvcRequestBuilders.delete(API_ANTIFRAUD_SUSPICIOUS_IP + "/%s".formatted(ip));
         var resultActions = mockMvc.perform(request);

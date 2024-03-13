@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Getter
@@ -27,7 +26,7 @@ public class IpAddressEntity implements Comparable<IpAddressEntity> {
     }
 
     @Override
-    public int compareTo(@NotNull IpAddressEntity other) {
+    public int compareTo(IpAddressEntity other) {
         return Long.compare(this.getId(), other.getId());
     }
 }

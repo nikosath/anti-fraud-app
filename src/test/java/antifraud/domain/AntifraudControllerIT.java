@@ -13,10 +13,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import static antifraud.domain.service.TransactionValidation.ValidationResultEnum.ALLOWED;
+import static antifraud.domain.service.TransactionValidation.TransactionStatusEnum.ALLOWED;
 import static antifraud.security.LockOperationEnum.UNLOCK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AntifraudControllerIT {
@@ -42,7 +41,11 @@ public class AntifraudControllerIT {
     void testValidateTransaction() {
         var headers = new HttpHeaders();
         headers.setBasicAuth(MERCHANT_USERNAME, MERCHANT_PASSWORD);
-        var request = new HttpEntity<>(new ValidateTransactionRequest(150L), headers) ;
+        long amount = 150L;
+        String ip = "169.254.123.229";
+        String cardNumber = "4000008449433403";
+        ValidateTransactionRequest body = new ValidateTransactionRequest(amount, ip, cardNumber);
+        var request = new HttpEntity<>(body, headers) ;
 
         var actual = template.postForEntity(Uri.API_ANTIFRAUD_TRANSACTION, request, ValidateTransactionResponse.class);
 

@@ -1,6 +1,8 @@
 package antifraud.error;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Stripped down version of Either type from Vavr libary
@@ -25,6 +27,15 @@ public interface Result<E, S> {
     S getSuccess();
 
     E getError();
+
+    default <U> Result<E, U> map(Function<? super S, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isSuccess()) {
+            return Result.success(mapper.apply(getSuccess()));
+        } else {
+            return (Result<E, U>) this;
+        }
+    }
 
     static class Success<E, S> implements Result<E, S> {
 

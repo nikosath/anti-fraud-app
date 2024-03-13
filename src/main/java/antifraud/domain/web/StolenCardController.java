@@ -6,6 +6,7 @@ import antifraud.domain.datastore.IStolenCardEntityDatastore;
 import antifraud.domain.datastore.StolenCardEntity;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +14,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.CreditCardNumber;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class StolenCardController {
 
     private final IStolenCardEntityDatastore datastore;
@@ -27,9 +31,9 @@ public class StolenCardController {
     @PostMapping(Uri.API_ANTIFRAUD_STOLENCARD)
     public ResponseEntity<StolenCardResponse> createStolenCard(@Valid @RequestBody StolenCardRequest req) {
         log.debug("saveStolenCard for req: " + req);
-        Result<ErrorEnum, StolenCardEntity> result = datastore.createStolenCard(req.cardNumber());
+        Result<ErrorEnum, StolenCardEntity> result = datastore.createStolenCard(req.number());
         if (result.isSuccess()) {
-            return ResponseEntity.status(HttpStatus.CREATED)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(StolenCardResponse.fromStolenCardEntity(result.getSuccess()));
         }
         return WebUtils.errorToResponseEntity(result.getError());
@@ -55,10 +59,22 @@ public class StolenCardController {
         return WebUtils.errorToResponseEntity(result.getError());
     }
 
-    public record StolenCardRequest(@NotBlank @CreditCardNumber String cardNumber) {
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException e) {
+        log.debug("e.getCause = {}, e.getConstraintViolations() = {}, e.getSuppressed() = {}",
+                e.getCause(), e.getConstraintViolations(), Arrays.stream(e.getSuppressed()).toList());
+
+        if (e.getConstraintViolations().size() == 1
+                && this.getClass().equals(e.getConstraintViolations().iterator().next().getRootBeanClass())) {
+            return ResponseEntity.badRequest().build();
+        }
+        throw e;
     }
 
-    public record StolenCardResponse(Long id, String cardNumber) {
+    public record StolenCardRequest(@NotBlank @CreditCardNumber String number) {
+    }
+
+    public record StolenCardResponse(Long id, String number) {
         public static StolenCardResponse fromStolenCardEntity(StolenCardEntity stolenCardEntity) {
             return new StolenCardResponse(stolenCardEntity.getId(), stolenCardEntity.getCardNumber());
         }

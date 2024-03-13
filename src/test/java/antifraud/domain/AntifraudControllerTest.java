@@ -1,7 +1,8 @@
 package antifraud.domain;
 
 import antifraud.TestHelper;
-import antifraud.domain.service.TransactionValidation.ValidationResultEnum;
+import antifraud.domain.datastore.FakeIpAddressEntityDatastore;
+import antifraud.domain.datastore.FakeStolenCardEntityDatastore;
 import antifraud.domain.web.AntifraudController;
 import antifraud.domain.web.AntifraudController.ValidateTransactionRequest;
 import antifraud.domain.web.AntifraudController.ValidateTransactionResponse;
@@ -17,16 +18,21 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static antifraud.common.Uri.API_ANTIFRAUD_TRANSACTION;
+import static antifraud.domain.service.TransactionValidation.TransactionStatusEnum.ALLOWED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import({SecurityFilterChainConfig.class})
+@Import({SecurityFilterChainConfig.class, FakeIpAddressEntityDatastore.class, FakeStolenCardEntityDatastore.class})
 @WebMvcTest(AntifraudController.class)
 class AntifraudControllerTest {
 
+    static TestHelper testHelper;
     @Autowired
     MockMvc mockMvc;
-    static TestHelper testHelper;
+//    @Autowired
+//    IIpAddressEntityDatastore ipDatastore;
+//    @Autowired
+//    IStolenCardEntityDatastore cardDatastore;
 
     @BeforeAll
     static void beforeAll(@Autowired ObjectMapper objectMapper) {
@@ -38,13 +44,16 @@ class AntifraudControllerTest {
     void validateTransaction_validAmount_allowed() throws Exception {
         // given
         long amount = 1L;
-        var request = testHelper.createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount));
+        String ip = "169.254.123.229";
+        String cardNumber = "4000008449433403";
+        var request = testHelper.createPostRequest(
+                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber));
         // when
         var resultActions = mockMvc.perform(request);
         // then
         resultActions.andExpect(status().isOk());
-        assertEquals(ValidationResultEnum.ALLOWED,
-                testHelper.deserializeToType(resultActions, ValidateTransactionResponse.class).result());
+        var result = testHelper.deserializeToType(resultActions, ValidateTransactionResponse.class).result();
+        assertEquals(ALLOWED, result);
     }
 
     @Test
@@ -52,7 +61,10 @@ class AntifraudControllerTest {
     void validateTransaction_invalidAmount_badRequest() throws Exception {
         // given
         long amount = 0;
-        var request = testHelper.createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount));
+        String ip = "169.254.123.229";
+        String cardNumber = "4000008449433403";
+        var request = testHelper.createPostRequest(
+                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber));
         // when
         var resultActions = mockMvc.perform(request);
         // then
@@ -64,7 +76,10 @@ class AntifraudControllerTest {
     void validateTransaction_anonymousUser_unauthorized() throws Exception {
         // given
         long amount = 1L;
-        var request = testHelper.createPostRequest(API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount));
+        String ip = "169.254.123.229";
+        String cardNumber = "4000008449433403";
+        var request = testHelper.createPostRequest(
+                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber));
         // when
         var resultActions = mockMvc.perform(request);
         // then

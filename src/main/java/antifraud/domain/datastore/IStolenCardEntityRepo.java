@@ -1,5 +1,6 @@
 package antifraud.domain.datastore;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.List;
@@ -8,6 +9,7 @@ public interface IStolenCardEntityRepo extends ListCrudRepository<StolenCardEnti
 
     boolean existsByCardNumber(String cardNumber);
 
+    @Transactional
     List<StolenCardEntity> deleteByCardNumber(String cardNumber);
 
     long countByCardNumber(String cardNumber);

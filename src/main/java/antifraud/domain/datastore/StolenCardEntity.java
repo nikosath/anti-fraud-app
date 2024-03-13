@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Getter
@@ -27,7 +26,7 @@ public class StolenCardEntity implements Comparable<StolenCardEntity> {
     }
 
     @Override
-    public int compareTo(@NotNull StolenCardEntity other) {
+    public int compareTo(StolenCardEntity other) {
         return Long.compare(this.getId(), other.getId());
     }
 }
