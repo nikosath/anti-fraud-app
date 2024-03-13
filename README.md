@@ -1,5 +1,7 @@
-# Anti-fraud app with Spring Security
+# Anti-fraud Service with Spring Security
 Work in progress. Less than halfway done. You can review the project with GitHub's IDE https://github.dev/nikosath/anti-fraud-app.
+## Description
+A Spring Security RESTful web service built to explore user authentication, authorization, and fraud detection fundamentals. Demonstrating anti-fraud principles in finance, it employs an expanded role model and user interaction endpoints, with internal transaction validation based on heuristic rules. Specs provided by the Hyperskill educational platform.
 
 ## I am experimenting with:
   - Testing with reusable custom fake objects (e.g. [FakeAuthService](src/test/java/antifraud/security/service/FakeAuthService.java)) instead of framework mocks e.g. Mockito mocks.
