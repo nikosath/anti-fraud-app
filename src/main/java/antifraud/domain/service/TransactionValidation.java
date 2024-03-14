@@ -13,33 +13,23 @@ import static antifraud.domain.service.TransactionValidation.TransactionValidati
 
 public class TransactionValidation {
 
-    public static TransactionDesignatedStatus determineTransactionStatusByValidating(long amount, boolean isIpBlacklisted, boolean isCreditCardBlacklisted) {
+    public static TransactionApprovalStatus determineTransactionApprovalStatus(long amount, boolean isIpBlacklisted,
+                                                                               boolean isCreditCardBlacklisted) {
 
         var validationResults = getValidationResults(amount, isIpBlacklisted, isCreditCardBlacklisted);
-        var transactionStatus = determineTransactionStatusWithHighestPrecedence(validationResults);
+        var transactionStatus = validationResults.iterator().next().getTransactionStatus();
         String justificationsConcatenated = validationResults.stream()
                 .map(result -> result.getStatusJustification())
                 .toList().stream().sorted().collect(Collectors.joining(", "));
-        return new TransactionDesignatedStatus(transactionStatus, justificationsConcatenated);
-    }
 
-    private static TransactionStatusEnum determineTransactionStatusWithHighestPrecedence(Set<TransactionValidationResultEnum> results) {
-        return results.stream().sorted().toList().get(0).getTransactionStatus();
+        return new TransactionApprovalStatus(transactionStatus, justificationsConcatenated);
     }
 
     @NotNull
     private static Set<TransactionValidationResultEnum> getValidationResults(long amount, boolean isIpBlacklisted,
                                                                              boolean isCreditCardBlacklisted) {
-        var validationResults = checkValidationsForProhibition(amount, isIpBlacklisted, isCreditCardBlacklisted);
-        boolean isNotProhibited = validationResults.isEmpty();
-        if (isNotProhibited) { // check rest validations
-            if (amount <= 200) {
-                validationResults.add(AMOUNT_LESS_EQUAL_200);
-            } else if (amount <= 1500) {
-                validationResults.add(AMOUNT_LESS_EQUAL_1500);
-            }
-        }
-        return validationResults;
+        var resultsForProhibition = checkValidationsForProhibition(amount, isIpBlacklisted, isCreditCardBlacklisted);
+        return resultsForProhibition.isEmpty() ? checkOtherValidations(amount) : resultsForProhibition;
     }
 
     private static Set<TransactionValidationResultEnum> checkValidationsForProhibition(long amount, boolean isIpBlacklisted,
@@ -57,13 +47,16 @@ public class TransactionValidation {
         return results;
     }
 
+    private static Set<TransactionValidationResultEnum> checkOtherValidations(long amount) {
+        Set<TransactionValidationResultEnum> validationResults = new HashSet<>();
+        if (amount <= 200) {
+            validationResults.add(AMOUNT_LESS_EQUAL_200);
+        } else if (amount <= 1500) {
+            validationResults.add(AMOUNT_LESS_EQUAL_1500);
+        }
+        return validationResults;
+    }
 
-    /**
-     * The declaration order of the enum values signifies their precedence during sorting.
-     * E.g. sorting a Set holding IP_BLACKLISTED and AMOUNT_LESS_EQUAL_200 in ascending order, will put the former first.
-     * Sorting is used in TransactionValidation#validateTransaction.
-     * See also java.lang.Enum#compareTo
-     */
     @Getter
     @RequiredArgsConstructor
     public enum TransactionValidationResultEnum {
@@ -81,6 +74,6 @@ public class TransactionValidation {
         PROHIBITED, MANUAL_PROCESSING, ALLOWED
     }
 
-    public record TransactionDesignatedStatus(TransactionStatusEnum transactionStatus, String statusJustification) {
+    public record TransactionApprovalStatus(TransactionStatusEnum transactionStatus, String statusJustification) {
     }
 }

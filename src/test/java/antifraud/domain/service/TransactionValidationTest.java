@@ -14,7 +14,7 @@ class TransactionValidationTest {
                                                                     String justification) {
         boolean ipBlacklisted = false;
         boolean creditCardBlacklisted = false;
-        var status = TransactionValidation.determineTransactionStatusByValidating(amount, ipBlacklisted, creditCardBlacklisted);
+        var status = TransactionValidation.determineTransactionApprovalStatus(amount, ipBlacklisted, creditCardBlacklisted);
         assertEquals(expectedStatus, status.transactionStatus());
         assertEquals(justification, status.statusJustification());
     }
@@ -25,7 +25,7 @@ class TransactionValidationTest {
                                                                     String justification) {
         boolean ipBlacklisted = true;
         boolean creditCardBlacklisted = false;
-        var status = TransactionValidation.determineTransactionStatusByValidating(amount, ipBlacklisted, creditCardBlacklisted);
+        var status = TransactionValidation.determineTransactionApprovalStatus(amount, ipBlacklisted, creditCardBlacklisted);
         assertEquals(expectedStatus, status.transactionStatus());
         assertEquals(justification, status.statusJustification());
     }
@@ -37,7 +37,7 @@ class TransactionValidationTest {
                                                                             String justification) {
         boolean ipBlacklisted = false;
         boolean creditCardBlacklisted = true;
-        var status = TransactionValidation.determineTransactionStatusByValidating(amount, ipBlacklisted, creditCardBlacklisted);
+        var status = TransactionValidation.determineTransactionApprovalStatus(amount, ipBlacklisted, creditCardBlacklisted);
         assertEquals(expectedStatus, status.transactionStatus());
         assertEquals(justification, status.statusJustification());
     }
@@ -51,7 +51,7 @@ class TransactionValidationTest {
                                                                                  String justification) {
         boolean ipBlacklisted = true;
         boolean creditCardBlacklisted = true;
-        var status = TransactionValidation.determineTransactionStatusByValidating(amount, ipBlacklisted, creditCardBlacklisted);
+        var status = TransactionValidation.determineTransactionApprovalStatus(amount, ipBlacklisted, creditCardBlacklisted);
         assertEquals(expectedStatus, status.transactionStatus());
         assertEquals(justification, status.statusJustification());
     }

@@ -29,8 +29,9 @@ public class AntifraudController {
     @PostMapping(Uri.API_ANTIFRAUD_TRANSACTION)
     public ResponseEntity<ValidateTransactionResponse> validateTransaction(@Valid @RequestBody ValidateTransactionRequest request) {
         log.debug("validateTransaction for request: " + request);
-        var transactionStatus = TransactionValidation.determineTransactionStatusByValidating(
+        var transactionStatus = TransactionValidation.determineTransactionApprovalStatus(
                 request.amount(), isIpBlacklisted(request.ip()), isCreditCardBlacklisted(request.number()));
+
         return ResponseEntity.ok(new ValidateTransactionResponse(transactionStatus));
     }
 
@@ -54,7 +55,7 @@ public class AntifraudController {
     }
 
     public record ValidateTransactionResponse(TransactionStatusEnum result, String info) {
-        ValidateTransactionResponse(TransactionValidation.TransactionDesignatedStatus status) {
+        ValidateTransactionResponse(TransactionValidation.TransactionApprovalStatus status) {
            this(status.transactionStatus(), status.statusJustification());
         }
     }
