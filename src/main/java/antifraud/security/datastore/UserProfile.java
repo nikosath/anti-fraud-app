@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 
+// TODO: Add bean validation annotations to all Entities
 @Entity
 @Getter
 @Setter

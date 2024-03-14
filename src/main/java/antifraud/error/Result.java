@@ -5,30 +5,30 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Stripped down version of Either type from Vavr libary
+ * Stripped down version of Either type from Vavr library
  *
  * @param <E> the error type when the Result is an Error
  * @param <S> the actual value type when the Result is a Success
  */
-public interface Result<E, S> {
+public abstract class Result<E, S> {
 
-    static <E, S> Result<E, S> success(S object) {
+    public static <E, S> Result<E, S> success(S object) {
         return new Success<>(object);
     }
 
-    static <E, S> Result<E, S> error(E object) {
+    public static <E, S> Result<E, S> error(E object) {
         return new Error<>(object);
     }
 
-    boolean isSuccess();
+    public abstract boolean isSuccess();
 
-    boolean isError();
+    public abstract boolean isError();
 
-    S getSuccess();
+    public abstract S getSuccess();
 
-    E getError();
+    public abstract E getError();
 
-    default <U> Result<E, U> map(Function<? super S, ? extends U> mapper) {
+    public <U> Result<E, U> map(Function<? super S, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isSuccess()) {
             return Result.success(mapper.apply(getSuccess()));
@@ -37,7 +37,7 @@ public interface Result<E, S> {
         }
     }
 
-    static class Success<E, S> implements Result<E, S> {
+    static class Success<E, S> extends Result<E, S> {
 
         private final S value;
 
@@ -66,7 +66,7 @@ public interface Result<E, S> {
         }
     }
 
-    static class Error<E, S> implements Result<E, S> {
+    static class Error<E, S> extends Result<E, S> {
 
         private final E value;
 
