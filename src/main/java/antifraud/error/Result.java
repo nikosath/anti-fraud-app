@@ -28,7 +28,8 @@ public abstract class Result<E, S> {
 
     public abstract E getError();
 
-    public <U> Result<E, U> map(Function<? super S, ? extends U> mapper) {
+    public <U> Result<E, U> map(Function<S, U> mapper) {
+//    public <U> Result<E, U> map(Function<? super S, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isSuccess()) {
             return Result.success(mapper.apply(getSuccess()));
