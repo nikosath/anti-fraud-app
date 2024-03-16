@@ -1,11 +1,11 @@
-package antifraud.domain;
+package antifraud.transactionvalidation;
 
 import antifraud.TestHelper;
-import antifraud.domain.datastore.FakeStolenCardEntityDatastore;
-import antifraud.domain.web.StolenCardController;
-import antifraud.domain.web.StolenCardController.DeleteStolenCardResponse;
-import antifraud.domain.web.StolenCardController.StolenCardResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
+import antifraud.transactionvalidation.datastore.FakeStolenCardEntityDatastore;
+import antifraud.transactionvalidation.web.StolenCardController;
+import antifraud.transactionvalidation.web.StolenCardController.DeleteStolenCardResponse;
+import antifraud.transactionvalidation.web.StolenCardController.StolenCardResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;

@@ -1,4 +1,4 @@
-package antifraud.domain.service;
+package antifraud.transactionvalidation.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static antifraud.domain.service.TransactionValidation.TransactionStatusEnum.*;
-import static antifraud.domain.service.TransactionValidation.TransactionValidationResultEnum.*;
+import static antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum.*;
+import static antifraud.transactionvalidation.service.TransactionValidation.TransactionValidationResultEnum.*;
 
 public class TransactionValidation {
 

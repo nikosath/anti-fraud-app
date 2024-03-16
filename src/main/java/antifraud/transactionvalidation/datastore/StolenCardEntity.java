@@ -1,4 +1,4 @@
-package antifraud.domain.datastore;
+package antifraud.transactionvalidation.datastore;
 
 import jakarta.persistence.*;
 import lombok.Getter;

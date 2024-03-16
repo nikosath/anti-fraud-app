@@ -1,12 +1,12 @@
-package antifraud.domain.web;
+package antifraud.transactionvalidation.web;
 
 import antifraud.common.Regexp;
 import antifraud.common.Uri;
 import antifraud.common.WebUtils;
-import antifraud.domain.datastore.IIpAddressEntityDatastore;
-import antifraud.domain.datastore.IpAddressEntity;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
+import antifraud.transactionvalidation.datastore.IIpAddressEntityDatastore;
+import antifraud.transactionvalidation.datastore.IpAddressEntity;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

@@ -1,12 +1,12 @@
-package antifraud.domain;
+package antifraud.transactionvalidation;
 
 import antifraud.TestHelper;
-import antifraud.domain.datastore.FakeIpAddressEntityDatastore;
-import antifraud.domain.datastore.FakeStolenCardEntityDatastore;
-import antifraud.domain.web.AntifraudController;
-import antifraud.domain.web.AntifraudController.ValidateTransactionRequest;
-import antifraud.domain.web.AntifraudController.ValidateTransactionResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
+import antifraud.transactionvalidation.datastore.FakeIpAddressEntityDatastore;
+import antifraud.transactionvalidation.datastore.FakeStolenCardEntityDatastore;
+import antifraud.transactionvalidation.web.AntifraudController;
+import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionRequest;
+import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static antifraud.common.Uri.API_ANTIFRAUD_TRANSACTION;
-import static antifraud.domain.service.TransactionValidation.TransactionStatusEnum.ALLOWED;
+import static antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum.ALLOWED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

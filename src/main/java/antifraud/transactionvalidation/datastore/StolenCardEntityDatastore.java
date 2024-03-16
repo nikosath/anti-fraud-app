@@ -1,4 +1,4 @@
-package antifraud.domain.datastore;
+package antifraud.transactionvalidation.datastore;
 
 import antifraud.error.ErrorEnum;
 import antifraud.error.FailedPreconditionException;

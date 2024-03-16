@@ -1,4 +1,4 @@
-package antifraud.domain.datastore;
+package antifraud.transactionvalidation.datastore;
 
 import jakarta.transaction.Transactional;
 import org.springframework.data.repository.ListCrudRepository;

@@ -1,11 +1,11 @@
-package antifraud.domain;
+package antifraud.transactionvalidation;
 
 import antifraud.TestHelper;
-import antifraud.domain.datastore.FakeIpAddressEntityDatastore;
-import antifraud.domain.web.SuspiciousIpController;
-import antifraud.domain.web.SuspiciousIpController.DeleteIpResponse;
-import antifraud.domain.web.SuspiciousIpController.IpAddressResponse;
 import antifraud.security.config.SecurityFilterChainConfig;
+import antifraud.transactionvalidation.datastore.FakeIpAddressEntityDatastore;
+import antifraud.transactionvalidation.web.SuspiciousIpController;
+import antifraud.transactionvalidation.web.SuspiciousIpController.DeleteIpResponse;
+import antifraud.transactionvalidation.web.SuspiciousIpController.IpAddressResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;

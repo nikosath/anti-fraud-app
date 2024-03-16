@@ -1,11 +1,11 @@
-package antifraud.domain.web;
+package antifraud.transactionvalidation.web;
 
 import antifraud.common.Regexp;
 import antifraud.common.Uri;
-import antifraud.domain.datastore.IIpAddressEntityDatastore;
-import antifraud.domain.datastore.IStolenCardEntityDatastore;
-import antifraud.domain.service.TransactionValidation;
-import antifraud.domain.service.TransactionValidation.TransactionStatusEnum;
+import antifraud.transactionvalidation.datastore.IIpAddressEntityDatastore;
+import antifraud.transactionvalidation.datastore.IStolenCardEntityDatastore;
+import antifraud.transactionvalidation.service.TransactionValidation;
+import antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

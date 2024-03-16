@@ -1,9 +1,9 @@
-package antifraud.domain;
+package antifraud.transactionvalidation;
 
 import antifraud.common.Uri;
-import antifraud.domain.web.AntifraudController.ValidateTransactionRequest;
-import antifraud.domain.web.AntifraudController.ValidateTransactionResponse;
 import antifraud.security.service.AuthService;
+import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionRequest;
+import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import static antifraud.domain.service.TransactionValidation.TransactionStatusEnum.ALLOWED;
 import static antifraud.security.LockOperationEnum.UNLOCK;
+import static antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum.ALLOWED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

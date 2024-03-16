@@ -1,9 +1,9 @@
-package antifraud.domain;
+package antifraud.transactionvalidation;
 
 import antifraud.common.Uri;
-import antifraud.domain.web.SuspiciousIpController;
 import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.service.IAuthService;
+import antifraud.transactionvalidation.web.SuspiciousIpController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

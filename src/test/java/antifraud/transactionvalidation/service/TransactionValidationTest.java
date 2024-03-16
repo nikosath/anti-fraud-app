@@ -1,6 +1,6 @@
-package antifraud.domain.service;
+package antifraud.transactionvalidation.service;
 
-import antifraud.domain.service.TransactionValidation.TransactionStatusEnum;
+import antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 

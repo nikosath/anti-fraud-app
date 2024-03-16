@@ -1,11 +1,11 @@
-package antifraud.domain.web;
+package antifraud.transactionvalidation.web;
 
 import antifraud.common.Uri;
 import antifraud.common.WebUtils;
-import antifraud.domain.datastore.IStolenCardEntityDatastore;
-import antifraud.domain.datastore.StolenCardEntity;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
+import antifraud.transactionvalidation.datastore.IStolenCardEntityDatastore;
+import antifraud.transactionvalidation.datastore.StolenCardEntity;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
