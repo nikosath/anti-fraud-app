@@ -16,7 +16,7 @@ public class TransactionValidation {
     public static TransactionApprovalStatus determineTransactionApprovalStatus(long amount, boolean isIpBlacklisted,
                                                                                boolean isCreditCardBlacklisted) {
 
-        var validationResults = getValidationResults(amount, isIpBlacklisted, isCreditCardBlacklisted);
+        var validationResults = checkAllTransactionValidations(amount, isIpBlacklisted, isCreditCardBlacklisted);
         var transactionStatus = validationResults.iterator().next().getTransactionStatus();
         String justificationsConcatenated = validationResults.stream()
                 .map(result -> result.getStatusJustification())
@@ -26,8 +26,8 @@ public class TransactionValidation {
     }
 
     @NotNull
-    private static Set<TransactionValidationResultEnum> getValidationResults(long amount, boolean isIpBlacklisted,
-                                                                             boolean isCreditCardBlacklisted) {
+    private static Set<TransactionValidationResultEnum> checkAllTransactionValidations(long amount, boolean isIpBlacklisted,
+                                                                                       boolean isCreditCardBlacklisted) {
         var resultsForProhibition = checkValidationsForProhibition(amount, isIpBlacklisted, isCreditCardBlacklisted);
         return resultsForProhibition.isEmpty() ? checkOtherValidations(amount) : resultsForProhibition;
     }
