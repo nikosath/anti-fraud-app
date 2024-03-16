@@ -3,7 +3,7 @@ package antifraud.transactionvalidation;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum RegionCode {
+public enum RegionCodeEnum {
     EAP("East Asia and Pacific"),
     ECA("Europe and Central Asia"),
     HIC("High-Income countries"),

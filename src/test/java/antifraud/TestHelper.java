@@ -38,4 +38,7 @@ public class TestHelper {
         return mapper.readValue(responseAsString, type);
     }
 
+    public enum TestBehaviorEnum {
+        SUCCEEDS, RETURNS_2_ENTITIES
+    }
 }

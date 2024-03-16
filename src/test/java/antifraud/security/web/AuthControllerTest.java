@@ -5,7 +5,6 @@ import antifraud.security.LockOperationEnum;
 import antifraud.security.config.SecurityFilterChainConfig;
 import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.service.FakeAuthService;
-import antifraud.security.service.FakeAuthService.BehaviorEnum;
 import antifraud.security.web.AuthController.LockStatusRequest;
 import antifraud.security.web.AuthController.UserRequest;
 import antifraud.security.web.AuthController.UserResponse;
@@ -47,7 +46,7 @@ class AuthControllerTest {
     @Test
     void createUser_succeeds() throws Exception {
         // given
-        fakeAuthService.setCreateUserBehavior(BehaviorEnum.SUCCEEDS);
+        fakeAuthService.setCreateUserBehavior(TestHelper.TestBehaviorEnum.SUCCEEDS);
         var payload = new UserRequest("Name2", "user2", "pass2");
         var request = testHelper.createPostRequest(API_AUTH_USER, payload);
 
@@ -65,7 +64,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = "SUPPORT")
     void listUsers_returnsExpectedEntities() throws Exception {
-        fakeAuthService.setListUsersBehavior(BehaviorEnum.RETURNS_2_ENTITIES);
+        fakeAuthService.setListUsersBehavior(TestHelper.TestBehaviorEnum.RETURNS_2_ENTITIES);
 
         var resultActions = mockMvc.perform(get(API_AUTH_LIST));
 
@@ -85,7 +84,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = "ADMINISTRATOR")
     void deleteUser_withAuthorizedUser_succeeds() throws Exception {
-        fakeAuthService.setDeleteUserBehavior(BehaviorEnum.SUCCEEDS);
+        fakeAuthService.setDeleteUserBehavior(TestHelper.TestBehaviorEnum.SUCCEEDS);
 
         mockMvc.perform(delete(API_AUTH_USER + "/user1"))
                 .andExpect(status().isOk());
@@ -94,7 +93,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = "ADMINISTRATOR")
     void updateUserRole_withAuthorizedUser_succeeds() throws Exception {
-        fakeAuthService.setUpdateUserRoleBehavior(BehaviorEnum.SUCCEEDS);
+        fakeAuthService.setUpdateUserRoleBehavior(TestHelper.TestBehaviorEnum.SUCCEEDS);
         var payload = new UserRoleRequest("user1", SecurityRoleEnum.MERCHANT);
         var request = testHelper.createPutRequest(API_AUTH_ROLE, payload);
 
@@ -105,7 +104,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = "ADMINISTRATOR")
     void updateUserLockStatus_withAuthorizedUser_succeeds() throws Exception {
-        fakeAuthService.setUpdateUserLockStatusBehavior(BehaviorEnum.SUCCEEDS);
+        fakeAuthService.setUpdateUserLockStatusBehavior(TestHelper.TestBehaviorEnum.SUCCEEDS);
         var payload = new LockStatusRequest("user1", LockOperationEnum.UNLOCK);
         var request = testHelper.createPutRequest(API_AUTH_ACCESS, payload);
 

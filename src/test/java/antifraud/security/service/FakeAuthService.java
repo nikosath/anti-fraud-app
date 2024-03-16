@@ -1,5 +1,6 @@
 package antifraud.security.service;
 
+import antifraud.TestHelper;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
 import antifraud.security.LockOperationEnum;
@@ -14,15 +15,15 @@ import java.util.List;
 @Setter
 public class FakeAuthService extends IAuthService {
 
-    private BehaviorEnum createUserBehavior;
-    private BehaviorEnum listUsersBehavior;
-    private BehaviorEnum deleteUserBehavior;
-    private BehaviorEnum updateUserRoleBehavior;
-    private BehaviorEnum updateUserLockStatusBehavior;
+    private TestHelper.TestBehaviorEnum createUserBehavior;
+    private TestHelper.TestBehaviorEnum listUsersBehavior;
+    private TestHelper.TestBehaviorEnum deleteUserBehavior;
+    private TestHelper.TestBehaviorEnum updateUserRoleBehavior;
+    private TestHelper.TestBehaviorEnum updateUserLockStatusBehavior;
 
     @Override
     public Result<ErrorEnum, UserProfile> createUser(String name, String username, String password) {
-        if (createUserBehavior == BehaviorEnum.SUCCEEDS) {
+        if (createUserBehavior == TestHelper.TestBehaviorEnum.SUCCEEDS) {
             UserProfile userProfile = UserProfile.with(name, username, password, SecurityRoleEnum.MERCHANT, true);
             userProfile.setId(1L);
             return Result.success(userProfile);
@@ -32,7 +33,7 @@ public class FakeAuthService extends IAuthService {
 
     @Override
     public List<UserProfile> listUsers() {
-        if (listUsersBehavior == BehaviorEnum.RETURNS_2_ENTITIES) {
+        if (listUsersBehavior == TestHelper.TestBehaviorEnum.RETURNS_2_ENTITIES) {
             var user1 = UserProfileFactory.newAdmin("Name1", "user1", "pass1");
             user1.setId(1L);
             var user2 = UserProfileFactory.newAdmin("Name2", "user2", "pass2");
@@ -44,7 +45,7 @@ public class FakeAuthService extends IAuthService {
 
     @Override
     public Result<ErrorEnum, UserProfile> deleteUser(String username) {
-        if (deleteUserBehavior == BehaviorEnum.SUCCEEDS) {
+        if (deleteUserBehavior == TestHelper.TestBehaviorEnum.SUCCEEDS) {
             var user1 = UserProfileFactory.newAdmin("Name1", "user1", "pass1");
             return Result.success(user1);
         }
@@ -53,7 +54,7 @@ public class FakeAuthService extends IAuthService {
 
     @Override
     public Result<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
-        if (updateUserRoleBehavior == BehaviorEnum.SUCCEEDS) {
+        if (updateUserRoleBehavior == TestHelper.TestBehaviorEnum.SUCCEEDS) {
             var user1 = UserProfileFactory.newAdmin("Name1", "user1", "pass1");
             user1.setId(1L);
             return Result.success(user1);
@@ -63,13 +64,10 @@ public class FakeAuthService extends IAuthService {
 
     @Override
     public Result<ErrorEnum, LockOperationEnum> updateUserLockStatus(String username, LockOperationEnum operation) {
-        if (updateUserLockStatusBehavior == BehaviorEnum.SUCCEEDS) {
+        if (updateUserLockStatusBehavior == TestHelper.TestBehaviorEnum.SUCCEEDS) {
             return Result.success(operation);
         }
         return Result.error(ErrorEnum.ENTITY_NOT_FOUND);
     }
 
-    public enum BehaviorEnum {
-        SUCCEEDS, RETURNS_2_ENTITIES
-    }
 }

@@ -4,6 +4,8 @@ import antifraud.transactionvalidation.service.TransactionValidation.Transaction
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TransactionValidationTest {
@@ -14,9 +16,9 @@ class TransactionValidationTest {
                                                                     String justification) {
         boolean ipBlacklisted = false;
         boolean creditCardBlacklisted = false;
-        var status = TransactionValidation.determineTransactionApprovalStatus(amount, ipBlacklisted, creditCardBlacklisted);
-        assertEquals(expectedStatus, status.transactionStatus());
-        assertEquals(justification, status.statusJustification());
+        var approvalVerdict = TransactionValidation.determineTransactionApprovalVerdict(amount, ipBlacklisted, creditCardBlacklisted, List.of());
+        assertEquals(expectedStatus, approvalVerdict.transactionStatus());
+        assertEquals(justification, approvalVerdict.statusJustification());
     }
 
     @ParameterizedTest
@@ -25,9 +27,9 @@ class TransactionValidationTest {
                                                                     String justification) {
         boolean ipBlacklisted = true;
         boolean creditCardBlacklisted = false;
-        var status = TransactionValidation.determineTransactionApprovalStatus(amount, ipBlacklisted, creditCardBlacklisted);
-        assertEquals(expectedStatus, status.transactionStatus());
-        assertEquals(justification, status.statusJustification());
+        var approvalVerdict = TransactionValidation.determineTransactionApprovalVerdict(amount, ipBlacklisted, creditCardBlacklisted, List.of());
+        assertEquals(expectedStatus, approvalVerdict.transactionStatus());
+        assertEquals(justification, approvalVerdict.statusJustification());
     }
 
     @ParameterizedTest
@@ -37,9 +39,9 @@ class TransactionValidationTest {
                                                                             String justification) {
         boolean ipBlacklisted = false;
         boolean creditCardBlacklisted = true;
-        var status = TransactionValidation.determineTransactionApprovalStatus(amount, ipBlacklisted, creditCardBlacklisted);
-        assertEquals(expectedStatus, status.transactionStatus());
-        assertEquals(justification, status.statusJustification());
+        var approvalVerdict = TransactionValidation.determineTransactionApprovalVerdict(amount, ipBlacklisted, creditCardBlacklisted, List.of());
+        assertEquals(expectedStatus, approvalVerdict.transactionStatus());
+        assertEquals(justification, approvalVerdict.statusJustification());
     }
 
     @ParameterizedTest
@@ -51,9 +53,9 @@ class TransactionValidationTest {
                                                                                  String justification) {
         boolean ipBlacklisted = true;
         boolean creditCardBlacklisted = true;
-        var status = TransactionValidation.determineTransactionApprovalStatus(amount, ipBlacklisted, creditCardBlacklisted);
-        assertEquals(expectedStatus, status.transactionStatus());
-        assertEquals(justification, status.statusJustification());
+        var approvalVerdict = TransactionValidation.determineTransactionApprovalVerdict(amount, ipBlacklisted, creditCardBlacklisted, List.of());
+        assertEquals(expectedStatus, approvalVerdict.transactionStatus());
+        assertEquals(justification, approvalVerdict.statusJustification());
     }
 
 }

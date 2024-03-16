@@ -1,20 +1,29 @@
 package antifraud.transactionvalidation.service;
 
+import antifraud.transactionvalidation.datastore.TransactionValidationEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum.*;
 import static antifraud.transactionvalidation.service.TransactionValidation.TransactionValidationResultEnum.*;
 
+@Slf4j
 public class TransactionValidation {
 
-    public static TransactionApprovalStatus determineTransactionApprovalStatus(long amount, boolean isIpBlacklisted,
-                                                                               boolean isCreditCardBlacklisted) {
+    public static TransactionApprovalVerdict determineTransactionApprovalVerdict(long amount, boolean isIpBlacklisted,
+                                                                                 boolean isCreditCardBlacklisted,
+                                                                                 List<TransactionValidationEntity> transactionValidationHistory) {
+
+        log.debug("amount = " + amount + ", isIpBlacklisted = " + isIpBlacklisted +
+                ", isCreditCardBlacklisted = " + isCreditCardBlacklisted +
+                ", transactionValidationHistory = " + transactionValidationHistory);
 
         var validationResults = checkAllTransactionValidations(amount, isIpBlacklisted, isCreditCardBlacklisted);
         var transactionStatus = validationResults.iterator().next().getTransactionStatus();
@@ -22,7 +31,7 @@ public class TransactionValidation {
                 .map(result -> result.getStatusJustification())
                 .toList().stream().sorted().collect(Collectors.joining(", "));
 
-        return new TransactionApprovalStatus(transactionStatus, justificationsConcatenated);
+        return new TransactionApprovalVerdict(transactionStatus, justificationsConcatenated);
     }
 
     @NotNull
@@ -74,6 +83,6 @@ public class TransactionValidation {
         PROHIBITED, MANUAL_PROCESSING, ALLOWED
     }
 
-    public record TransactionApprovalStatus(TransactionStatusEnum transactionStatus, String statusJustification) {
+    public record TransactionApprovalVerdict(TransactionStatusEnum transactionStatus, String statusJustification) {
     }
 }

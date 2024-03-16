@@ -46,7 +46,7 @@ public class AntifraudControllerIT {
         long amount = 150L;
         String ip = "169.254.123.229";
         String cardNumber = "4000008449433403";
-        ValidateTransactionRequest body = new ValidateTransactionRequest(amount, ip, cardNumber, RegionCode.EAP, LocalDateTime.of(2023, 1, 1, 0, 0));
+        ValidateTransactionRequest body = new ValidateTransactionRequest(amount, ip, cardNumber, RegionCodeEnum.EAP, LocalDateTime.of(2023, 1, 1, 0, 0));
         var request = new HttpEntity<>(body, headers) ;
 
         var actual = template.postForEntity(Uri.API_ANTIFRAUD_TRANSACTION, request, ValidateTransactionResponse.class);

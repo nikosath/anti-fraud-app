@@ -2,8 +2,8 @@ package antifraud.transactionvalidation.web;
 
 import antifraud.common.Regexp;
 import antifraud.common.Uri;
-import antifraud.transactionvalidation.datastore.IIpAddressEntityDatastore;
-import antifraud.transactionvalidation.datastore.IStolenCardEntityDatastore;
+import antifraud.transactionvalidation.RegionCodeEnum;
+import antifraud.transactionvalidation.service.ITransactionValidationService;
 import antifraud.transactionvalidation.service.TransactionValidation;
 import antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum;
 import jakarta.validation.Valid;
@@ -18,47 +18,39 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AntifraudController {
 
-    private final IIpAddressEntityDatastore ipDatastore;
-    private final IStolenCardEntityDatastore cardDatastore;
+    private final ITransactionValidationService service;
 
     @PostMapping(Uri.API_ANTIFRAUD_TRANSACTION)
     public ResponseEntity<ValidateTransactionResponse> validateTransaction(@Valid @RequestBody ValidateTransactionRequest request) {
         log.debug("validateTransaction for request: " + request);
-        var transactionStatus = TransactionValidation.determineTransactionApprovalStatus(
-                request.amount(), isIpBlacklisted(request.ip()), isCreditCardBlacklisted(request.number()));
-
+        var transactionStatus = service.getTransactionApprovalStatus(request);
         return ResponseEntity.ok(new ValidateTransactionResponse(transactionStatus));
-    }
-
-    private boolean isCreditCardBlacklisted(String number) {
-        return cardDatastore.existsByCardNumber(number);
-    }
-
-    private boolean isIpBlacklisted(String ip) {
-        return ipDatastore.existsByIp(ip);
     }
 
     /**
      * @param amount transaction amount
      * @param ip     ip address of the transaction initiator
-     * @param number credit card of the transaction initiator
-     * @param region
+     * @param number credit card used for the transaction
+     * @param region geographical region of the transaction initiator
      * @param date   transaction date-time
      */
     public record ValidateTransactionRequest(
             @Min(1) long amount,
             @NotBlank @Pattern(regexp = Regexp.IP_ADDRESS) String ip,
-            @NotBlank @CreditCardNumber String number, antifraud.transactionvalidation.RegionCode region,
-            java.time.LocalDateTime date) {
+            @NotBlank @CreditCardNumber String number,
+            RegionCodeEnum region,
+            LocalDateTime date) {
     }
 
     public record ValidateTransactionResponse(TransactionStatusEnum result, String info) {
-        ValidateTransactionResponse(TransactionValidation.TransactionApprovalStatus status) {
+        ValidateTransactionResponse(TransactionValidation.TransactionApprovalVerdict status) {
             this(status.transactionStatus(), status.statusJustification());
         }
     }
