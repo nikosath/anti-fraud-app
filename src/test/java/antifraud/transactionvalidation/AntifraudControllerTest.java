@@ -17,6 +17,8 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+
 import static antifraud.common.Uri.API_ANTIFRAUD_TRANSACTION;
 import static antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum.ALLOWED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +49,7 @@ class AntifraudControllerTest {
         String ip = "169.254.123.229";
         String cardNumber = "4000008449433403";
         var request = testHelper.createPostRequest(
-                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber));
+                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber, RegionCode.EAP, LocalDateTime.of(2023, 1, 1, 0, 0)));
         // when
         var resultActions = mockMvc.perform(request);
         // then
@@ -64,7 +66,7 @@ class AntifraudControllerTest {
         String ip = "169.254.123.229";
         String cardNumber = "4000008449433403";
         var request = testHelper.createPostRequest(
-                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber));
+                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber, RegionCode.EAP, LocalDateTime.of(2023, 1, 1, 0, 0)));
         // when
         var resultActions = mockMvc.perform(request);
         // then
@@ -79,7 +81,7 @@ class AntifraudControllerTest {
         String ip = "169.254.123.229";
         String cardNumber = "4000008449433403";
         var request = testHelper.createPostRequest(
-                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber));
+                API_ANTIFRAUD_TRANSACTION, new ValidateTransactionRequest(amount, ip, cardNumber, RegionCode.EAP, LocalDateTime.of(2023, 1, 1, 0, 0)));
         // when
         var resultActions = mockMvc.perform(request);
         // then

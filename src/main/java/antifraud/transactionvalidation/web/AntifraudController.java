@@ -44,14 +44,17 @@ public class AntifraudController {
     }
 
     /**
-     * @param amount transaction amount
-     * @param ip     ip address of the transaction initiator
-     * @param number credit card of the transaction initiator
+     * @param amount              transaction amount
+     * @param ip                  ip address of the transaction initiator
+     * @param number              credit card of the transaction initiator
+     * @param region
+     * @param transactionDateTime
      */
     public record ValidateTransactionRequest(
             @Min(1) long amount,
             @NotBlank @Pattern(regexp = Regexp.IP_ADDRESS) String ip,
-            @NotBlank @CreditCardNumber String number) {
+            @NotBlank @CreditCardNumber String number, antifraud.transactionvalidation.RegionCode region,
+            java.time.LocalDateTime transactionDateTime) {
     }
 
     public record ValidateTransactionResponse(TransactionStatusEnum result, String info) {
