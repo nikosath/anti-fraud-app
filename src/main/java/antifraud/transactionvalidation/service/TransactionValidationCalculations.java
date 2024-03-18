@@ -110,23 +110,6 @@ public class TransactionValidationCalculations {
         return results;
     }
 
-
-    private static int countTransactionsWithDifferentIp(String ipAddress, List<TransactionValidationEntity> transactions) {
-        return transactions.stream().map(transaction -> transaction.getIpAddress()).filter(ip -> !ip.equals(ipAddress)).collect(Collectors.toSet()).size();
-    }
-
-    private static int countTransactionsWithDifferentRegion(Enum.RegionCode region,
-                                                            List<TransactionValidationEntity> transactions) {
-        return transactions.stream().map(transaction -> transaction.getRegionCode()).filter(reg -> !reg.equals(region)).collect(Collectors.toSet()).size();
-    }
-
-    private static Dto.TransactionApprovalVerdict toTransactionApprovalVerdict(Set<TransactionValidationResultEnum> validationResults) {
-        var transactionStatus = validationResults.iterator().next().getTransactionStatus();
-        String justificationsConcatenated = toJustificationsConcatenated(validationResults);
-
-        return new Dto.TransactionApprovalVerdict(transactionStatus, justificationsConcatenated);
-    }
-
     @Getter
     @RequiredArgsConstructor
     enum TransactionValidationResultEnum {
