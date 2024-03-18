@@ -1,7 +1,7 @@
 package antifraud.transactionvalidation.datastore;
 
+import antifraud.error.CustomExceptions;
 import antifraud.error.ErrorEnum;
-import antifraud.error.FailedPreconditionException;
 import antifraud.error.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -44,7 +44,7 @@ public class IpAddressEntityDatastore implements IIpAddressEntityDatastore {
     public Result<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip) {
         long countByIp = repo.countByIp(ip);
         if (countByIp > 1) {
-            throw new FailedPreconditionException(MULTIPLE_ENTITIES_FOUND);
+            throw new CustomExceptions.FailedPreconditionException(MULTIPLE_ENTITIES_FOUND.name());
         }
         if (countByIp == 0) {
             return Result.error(ENTITY_NOT_FOUND);

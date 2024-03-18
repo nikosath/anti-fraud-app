@@ -4,8 +4,8 @@ import antifraud.common.Regexp;
 import antifraud.common.Uri;
 import antifraud.transactionvalidation.RegionCodeEnum;
 import antifraud.transactionvalidation.service.ITransactionValidationService;
-import antifraud.transactionvalidation.service.TransactionValidation;
-import antifraud.transactionvalidation.service.TransactionValidation.TransactionStatusEnum;
+import antifraud.transactionvalidation.service.TransactionValidationCalculations;
+import antifraud.transactionvalidation.service.TransactionValidationCalculations.TransactionStatusEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -50,8 +50,8 @@ public class AntifraudController {
     }
 
     public record ValidateTransactionResponse(TransactionStatusEnum result, String info) {
-        ValidateTransactionResponse(TransactionValidation.TransactionApprovalVerdict status) {
-            this(status.transactionStatus(), status.statusJustification());
+        ValidateTransactionResponse(TransactionValidationCalculations.TransactionApprovalVerdict verdict) {
+            this(verdict.transactionStatus(), verdict.statusJustification());
         }
     }
 

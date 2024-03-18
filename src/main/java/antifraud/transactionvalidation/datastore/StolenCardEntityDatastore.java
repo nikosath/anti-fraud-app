@@ -1,7 +1,7 @@
 package antifraud.transactionvalidation.datastore;
 
+import antifraud.error.CustomExceptions;
 import antifraud.error.ErrorEnum;
-import antifraud.error.FailedPreconditionException;
 import antifraud.error.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -44,7 +44,7 @@ public class StolenCardEntityDatastore implements IStolenCardEntityDatastore {
     public Result<ErrorEnum, StolenCardEntity> deleteStolenCard(String cardNumber) {
         long countByCardNumber = repo.countByCardNumber(cardNumber);
         if (countByCardNumber > 1) {
-            throw new FailedPreconditionException(MULTIPLE_ENTITIES_FOUND);
+            throw new CustomExceptions.FailedPreconditionException(MULTIPLE_ENTITIES_FOUND.name());
         }
         if (countByCardNumber == 0) {
             return Result.error(ENTITY_NOT_FOUND);

@@ -41,4 +41,10 @@ public class TestHelper {
     public enum TestBehaviorEnum {
         SUCCEEDS, RETURNS_2_ENTITIES
     }
+
+    public static class Constants {
+        public static final String VALID_CARD_NUMBER = "4000008449433403";
+        public static final String VALID_IP = "169.254.123.220";
+
+    }
 }

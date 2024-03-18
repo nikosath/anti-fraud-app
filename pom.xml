@@ -63,12 +63,12 @@
 <!--            <artifactId>vavr</artifactId>-->
 <!--            <version>0.10.4</version>-->
 <!--        </dependency>-->
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jetbrains</groupId>-->
+<!--            <artifactId>annotations</artifactId>-->
+<!--            <version>24.0.1</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
 
         <!--Testing-->
         <dependency>
