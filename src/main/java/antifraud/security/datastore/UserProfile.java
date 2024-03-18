@@ -1,5 +1,6 @@
 package antifraud.security.datastore;
 
+import antifraud.security.Enum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public class UserProfile implements UserDetails, Comparable<UserProfile> {
     private String password;
 //    @Transient
     @Enumerated(EnumType.STRING)
-    private SecurityRoleEnum role;
+    private Enum.SecurityRole role;
 //    private Set<SecurityPermissionEnum> permissions;
     @Transient
     private transient Set<GrantedAuthority> authorities;
@@ -38,11 +39,11 @@ public class UserProfile implements UserDetails, Comparable<UserProfile> {
 //    private boolean credentialsNonExpired = true;
 //    private boolean enabled = true;
 
-    public static UserProfile with(String name, String username, String password, SecurityRoleEnum role, boolean accountNonLocked) {
+    public static UserProfile with(String name, String username, String password, Enum.SecurityRole role, boolean accountNonLocked) {
         return new UserProfile(name, username, password, role, accountNonLocked);
     }
 
-    private UserProfile(String name, String username, String password, SecurityRoleEnum role, boolean accountNonLocked) {
+    private UserProfile(String name, String username, String password, Enum.SecurityRole role, boolean accountNonLocked) {
         this.name = name;
         setUsername(username);
         this.password = password;
@@ -54,12 +55,12 @@ public class UserProfile implements UserDetails, Comparable<UserProfile> {
         this.accountNonLocked = accountNonLocked;
     }
 
-    public void setRole(SecurityRoleEnum role) {
+    public void setRole(Enum.SecurityRole role) {
         this.role = role;
         setAuthoritiesFromRole(role);
     }
 
-    private void setAuthoritiesFromRole(SecurityRoleEnum role) {
+    private void setAuthoritiesFromRole(Enum.SecurityRole role) {
         this.authorities = Set.of(role.getAuthority());
     }
 

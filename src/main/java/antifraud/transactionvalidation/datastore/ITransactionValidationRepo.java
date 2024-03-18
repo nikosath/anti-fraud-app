@@ -1,6 +1,6 @@
 package antifraud.transactionvalidation.datastore;
 
-import antifraud.transactionvalidation.RegionCodeEnum;
+import antifraud.transactionvalidation.Enum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -33,9 +33,9 @@ public interface ITransactionValidationRepo extends JpaRepository<TransactionVal
             "AND t.regionCode != :regionCode")
     long countTransactionsWithDifferentRegionInLastHour(String creditCardNumber, LocalDateTime fromDateTime,
                                                         LocalDateTime untilDateTime,
-                                                        RegionCodeEnum regionCode);
+                                                        Enum.RegionCode regionCode);
 //    long countByCreditCardNumberAndTransactionDateTimeBetweenAndRegionCodeNot(String creditCardNumber, LocalDateTime fromDateTime,
 //                                                                              LocalDateTime untilDateTime,
-//                                                                              RegionCodeEnum regionCode);
+//                                                                              RegionCode regionCode);
 
 }

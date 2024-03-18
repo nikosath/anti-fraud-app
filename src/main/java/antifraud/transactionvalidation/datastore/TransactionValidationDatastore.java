@@ -1,6 +1,6 @@
 package antifraud.transactionvalidation.datastore;
 
-import antifraud.transactionvalidation.RegionCodeEnum;
+import antifraud.transactionvalidation.Enum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -39,7 +39,7 @@ public class TransactionValidationDatastore implements ITransactionValidationDat
 
     @Override
     public long countTransactionsWithDifferentRegionInLastHour(String creditCardNumber,
-                                                               LocalDateTime transactionDateTime, RegionCodeEnum regionCode) {
+                                                               LocalDateTime transactionDateTime, Enum.RegionCode regionCode) {
         LocalDateTime fromDateTime = transactionDateTime.minusHours(1);
         return repo.countTransactionsWithDifferentRegionInLastHour(creditCardNumber, fromDateTime,
                 transactionDateTime, regionCode);

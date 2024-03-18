@@ -1,6 +1,6 @@
 package antifraud.transactionvalidation.datastore;
 
-import antifraud.transactionvalidation.RegionCodeEnum;
+import antifraud.transactionvalidation.Enum;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,5 +18,5 @@ public interface ITransactionValidationDatastore {
                                                     LocalDateTime transactionDateTime, String ipAddress);
 
     long countTransactionsWithDifferentRegionInLastHour(String creditCardNumber,
-                                                        LocalDateTime transactionDateTime, RegionCodeEnum regionCode);
+                                                        LocalDateTime transactionDateTime, Enum.RegionCode regionCode);
 }

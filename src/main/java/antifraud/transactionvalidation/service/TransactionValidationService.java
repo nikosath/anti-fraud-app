@@ -1,13 +1,17 @@
 package antifraud.transactionvalidation.service;
 
+import antifraud.transactionvalidation.Dto;
+import antifraud.transactionvalidation.Enum;
 import antifraud.transactionvalidation.datastore.IIpAddressEntityDatastore;
 import antifraud.transactionvalidation.datastore.IStolenCardEntityDatastore;
 import antifraud.transactionvalidation.datastore.ITransactionValidationDatastore;
-import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionRequest;
+import antifraud.transactionvalidation.datastore.TransactionValidationEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static antifraud.transactionvalidation.service.TransactionValidationCalculations.*;
+import java.time.LocalDateTime;
+
+import static antifraud.transactionvalidation.service.TransactionValidationCalculations.getTransactionApprovalVerdict;
 
 @Service
 @RequiredArgsConstructor
@@ -17,38 +21,25 @@ public class TransactionValidationService implements ITransactionValidationServi
     private final IStolenCardEntityDatastore cardDatastore;
     private final ITransactionValidationDatastore transactionDatastore;
 
-//    @PostConstruct
-//    void saveTransactionsForTest() {
-//        for (int i = 0; i < 2; i++) {
-//            String cardNumber = "4000008449433403";
-//            String ip = "169.254.123.22" + i;
-//            int minute = i;
-//            LocalDateTime localDateTime = LocalDateTime.of(2023, 1, 1, 0, minute);
-//            TransactionValidationEntity entity = new TransactionValidationEntity(10, ip, cardNumber, RegionCodeEnum.EAP,
-//                    localDateTime, TransactionStatusEnum.ALLOWED, "none");
-//            transactionDatastore.save(entity);
-//        }
-//    }
-
-    @Override
-    public TransactionApprovalVerdict getTransactionApprovalStatus(ValidateTransactionRequest request) {
+    public Dto.TransactionApprovalVerdict getTransactionApprovalStatus(long amount, String ip, String number,
+                                                                       Enum.RegionCode regionCode, LocalDateTime date) {
         // actions
-        boolean isIpBlacklisted = isIpBlacklisted(request.ip());
-        boolean isCreditCardBlacklisted = isCreditCardBlacklisted(request.number());
+        boolean isIpBlacklisted = isIpBlacklisted(ip);
+        boolean isCreditCardBlacklisted = isCreditCardBlacklisted(number);
         long countTransactionsWithDifferentIp = transactionDatastore.countTransactionsWithDifferentIpInLastHour(
-                request.number(), request.date(), request.ip());
+                number, date, ip);
         long countTransactionsWithDifferentRegion = transactionDatastore.countTransactionsWithDifferentRegionInLastHour(
-                request.number(), request.date(), request.region());
+                number, date, regionCode);
 //        List<TransactionValidationEntity> transactionValidationHistory = transactionDatastore.getTransactionValidationHistory(
 //                request.number(), request.date().minusHours(1), request.date()
 //        );
 
         // calculations
-        TransactionApprovalVerdict approvalVerdict = getTransactionApprovalVerdict(request.amount(), isIpBlacklisted,
+        Dto.TransactionApprovalVerdict approvalVerdict = getTransactionApprovalVerdict(amount, isIpBlacklisted,
                 isCreditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion);
 
         // action
-        transactionDatastore.save(toEntity(request, approvalVerdict));
+        transactionDatastore.save(toEntity(amount, ip, number, regionCode, date, approvalVerdict));
         return approvalVerdict;
     }
 
@@ -59,4 +50,11 @@ public class TransactionValidationService implements ITransactionValidationServi
     private boolean isIpBlacklisted(String ip) {
         return ipDatastore.existsByIp(ip);
     }
+
+    private TransactionValidationEntity toEntity(long amount, String ip, String number, Enum.RegionCode regionCode,
+                                                 LocalDateTime date, Dto.TransactionApprovalVerdict approvalVerdict) {
+        return new TransactionValidationEntity(amount, ip, number, regionCode, date, approvalVerdict.transactionStatus(),
+                approvalVerdict.statusJustification());
+    }
+
 }

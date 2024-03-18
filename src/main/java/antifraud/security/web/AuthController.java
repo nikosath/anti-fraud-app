@@ -4,8 +4,7 @@ import antifraud.common.Uri;
 import antifraud.common.WebUtils;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
-import antifraud.security.LockOperationEnum;
-import antifraud.security.datastore.SecurityRoleEnum;
+import antifraud.security.Enum;
 import antifraud.security.datastore.UserProfile;
 import antifraud.security.service.IAuthService;
 import jakarta.validation.Valid;
@@ -70,7 +69,7 @@ public class AuthController {
     @PutMapping(Uri.API_AUTH_ACCESS)
     public ResponseEntity<LockStatusResponse> updateUserLockStatus(@Valid @RequestBody LockStatusRequest req) {
         log.debug("updateUserLockStatus req = " + req);
-        Result<ErrorEnum, LockOperationEnum> result = authService.updateUserLockStatus(req.username(), req.operation());
+        Result<ErrorEnum, Enum.LockOperation> result = authService.updateUserLockStatus(req.username(), req.operation());
         if (result.isSuccess()) {
             return ResponseEntity.ok(
                     new LockStatusResponse(req.username(), result.getSuccess()));
@@ -81,7 +80,7 @@ public class AuthController {
     public record UserRequest(String name, @NotBlank String username, @NotBlank String password) {
     }
 
-    public record UserResponse(Long id, String name, String username, SecurityRoleEnum role) {
+    public record UserResponse(Long id, String name, String username, Enum.SecurityRole role) {
         static UserResponse fromUserProfile(UserProfile user) {
             return new UserResponse(user.getId(), user.getName(), user.getUsername(), user.getRole());
         }
@@ -90,17 +89,17 @@ public class AuthController {
     public record DeleteResponse(String username, String status) {
     }
 
-    public record UserRoleRequest(@NotBlank String username, @NotNull SecurityRoleEnum role) {}
+    public record UserRoleRequest(@NotBlank String username, @NotNull Enum.SecurityRole role) {}
 
-    public record LockStatusRequest(@NotBlank String username, @NotNull LockOperationEnum operation) {}
+    public record LockStatusRequest(@NotBlank String username, @NotNull Enum.LockOperation operation) {}
 
     public record LockStatusResponse(String status) {
-        LockStatusResponse(String username, LockOperationEnum operation) {
+        LockStatusResponse(String username, Enum.LockOperation operation) {
             this(toStatus(username, operation));
         }
 
-        private static String toStatus(String username, LockOperationEnum operation) {
-            String lockStatus = LockOperationEnum.LOCK.equals(operation) ? "locked" : "unlocked";
+        private static String toStatus(String username, Enum.LockOperation operation) {
+            String lockStatus = Enum.LockOperation.LOCK.equals(operation) ? "locked" : "unlocked";
             return String.format("User %s %s!", username, lockStatus);
         }
     }

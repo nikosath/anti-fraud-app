@@ -1,9 +1,8 @@
 package antifraud.security.web;
 
 import antifraud.TestHelper;
-import antifraud.security.LockOperationEnum;
+import antifraud.security.Enum;
 import antifraud.security.config.SecurityFilterChainConfig;
-import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.service.FakeAuthService;
 import antifraud.security.web.AuthController.LockStatusRequest;
 import antifraud.security.web.AuthController.UserRequest;
@@ -94,7 +93,7 @@ class AuthControllerTest {
     @WithMockUser(roles = "ADMINISTRATOR")
     void updateUserRole_withAuthorizedUser_succeeds() throws Exception {
         fakeAuthService.setUpdateUserRoleBehavior(TestHelper.TestBehaviorEnum.SUCCEEDS);
-        var payload = new UserRoleRequest("user1", SecurityRoleEnum.MERCHANT);
+        var payload = new UserRoleRequest("user1", Enum.SecurityRole.MERCHANT);
         var request = testHelper.createPutRequest(API_AUTH_ROLE, payload);
 
         mockMvc.perform(request)
@@ -105,7 +104,7 @@ class AuthControllerTest {
     @WithMockUser(roles = "ADMINISTRATOR")
     void updateUserLockStatus_withAuthorizedUser_succeeds() throws Exception {
         fakeAuthService.setUpdateUserLockStatusBehavior(TestHelper.TestBehaviorEnum.SUCCEEDS);
-        var payload = new LockStatusRequest("user1", LockOperationEnum.UNLOCK);
+        var payload = new LockStatusRequest("user1", Enum.LockOperation.UNLOCK);
         var request = testHelper.createPutRequest(API_AUTH_ACCESS, payload);
 
         mockMvc.perform(request)

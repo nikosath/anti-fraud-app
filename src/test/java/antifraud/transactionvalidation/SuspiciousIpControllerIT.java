@@ -1,7 +1,7 @@
 package antifraud.transactionvalidation;
 
 import antifraud.common.Uri;
-import antifraud.security.datastore.SecurityRoleEnum;
+import antifraud.security.Enum;
 import antifraud.security.service.IAuthService;
 import antifraud.transactionvalidation.web.SuspiciousIpController;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
-import static antifraud.security.LockOperationEnum.UNLOCK;
+import static antifraud.security.Enum.LockOperation.UNLOCK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SuspiciousIpControllerIT {
@@ -35,7 +35,7 @@ class SuspiciousIpControllerIT {
         // unlock merchant
         authService.updateUserLockStatus("user1", UNLOCK);
         // change MERCHANT to SUPPORT
-        authService.updateUserRole(SUPPORT_USERNAME, SecurityRoleEnum.SUPPORT);
+        authService.updateUserRole(SUPPORT_USERNAME, Enum.SecurityRole.SUPPORT);
     }
 
     @Test

@@ -3,8 +3,7 @@ package antifraud.security.service;
 import antifraud.TestHelper;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
-import antifraud.security.LockOperationEnum;
-import antifraud.security.datastore.SecurityRoleEnum;
+import antifraud.security.Enum;
 import antifraud.security.datastore.UserProfile;
 import antifraud.security.datastore.UserProfileFactory;
 import lombok.Setter;
@@ -24,7 +23,7 @@ public class FakeAuthService extends IAuthService {
     @Override
     public Result<ErrorEnum, UserProfile> createUser(String name, String username, String password) {
         if (createUserBehavior == TestHelper.TestBehaviorEnum.SUCCEEDS) {
-            UserProfile userProfile = UserProfile.with(name, username, password, SecurityRoleEnum.MERCHANT, true);
+            UserProfile userProfile = UserProfile.with(name, username, password, Enum.SecurityRole.MERCHANT, true);
             userProfile.setId(1L);
             return Result.success(userProfile);
         }
@@ -53,7 +52,7 @@ public class FakeAuthService extends IAuthService {
     }
 
     @Override
-    public Result<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
+    public Result<ErrorEnum, UserProfile> updateUserRole(String username, Enum.SecurityRole role) {
         if (updateUserRoleBehavior == TestHelper.TestBehaviorEnum.SUCCEEDS) {
             var user1 = UserProfileFactory.newAdmin("Name1", "user1", "pass1");
             user1.setId(1L);
@@ -63,7 +62,7 @@ public class FakeAuthService extends IAuthService {
     }
 
     @Override
-    public Result<ErrorEnum, LockOperationEnum> updateUserLockStatus(String username, LockOperationEnum operation) {
+    public Result<ErrorEnum, Enum.LockOperation> updateUserLockStatus(String username, Enum.LockOperation operation) {
         if (updateUserLockStatusBehavior == TestHelper.TestBehaviorEnum.SUCCEEDS) {
             return Result.success(operation);
         }

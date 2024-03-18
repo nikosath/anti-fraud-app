@@ -1,9 +1,9 @@
 package antifraud.transactionvalidation.service;
 
 import antifraud.error.CustomExceptions;
-import antifraud.transactionvalidation.RegionCodeEnum;
+import antifraud.transactionvalidation.Dto;
+import antifraud.transactionvalidation.Enum;
 import antifraud.transactionvalidation.datastore.TransactionValidationEntity;
-import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,16 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static antifraud.transactionvalidation.service.TransactionValidationCalculations.TransactionStatusEnum.*;
+import static antifraud.transactionvalidation.Enum.TransactionStatus.*;
 import static antifraud.transactionvalidation.service.TransactionValidationCalculations.TransactionValidationResultEnum.*;
 
 @Slf4j
 public class TransactionValidationCalculations {
 
-    public static TransactionApprovalVerdict getTransactionApprovalVerdict(long amount, boolean isIpBlacklisted,
-                                                                           boolean isCreditCardBlacklisted,
-                                                                           long countTransactionsWithDifferentIp,
-                                                                           long countTransactionsWithDifferentRegion) {
+    public static Dto.TransactionApprovalVerdict getTransactionApprovalVerdict(long amount, boolean isIpBlacklisted,
+                                                                               boolean isCreditCardBlacklisted,
+                                                                               long countTransactionsWithDifferentIp,
+                                                                               long countTransactionsWithDifferentRegion) {
         log.debug("amount = " + amount + ", isIpBlacklisted = " + isIpBlacklisted + ", isCreditCardBlacklisted = " +
                 isCreditCardBlacklisted + ", countTransactionsWithDifferentIp = " + countTransactionsWithDifferentIp +
                 ", countTransactionsWithDifferentRegion = " + countTransactionsWithDifferentRegion);
@@ -28,7 +28,7 @@ public class TransactionValidationCalculations {
         Set<TransactionValidationResultEnum> results = getTransactionValidationResultEnums(amount, isIpBlacklisted,
                 isCreditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion);
 
-        TransactionApprovalVerdict transactionApprovalVerdict = determineTransactionApprovalVerdict(results);
+        Dto.TransactionApprovalVerdict transactionApprovalVerdict = determineTransactionApprovalVerdict(results);
 
         log.debug("transactionApprovalVerdict = " + transactionApprovalVerdict);
         return transactionApprovalVerdict;
@@ -48,30 +48,24 @@ public class TransactionValidationCalculations {
         return results;
     }
 
-    public static TransactionApprovalVerdict determineTransactionApprovalVerdict(Set<TransactionValidationResultEnum> results) {
-        Map<TransactionStatusEnum, List<TransactionValidationResultEnum>> statusToResults =
+    public static Dto.TransactionApprovalVerdict determineTransactionApprovalVerdict(Set<TransactionValidationResultEnum> results) {
+        Map<Enum.TransactionStatus, List<TransactionValidationResultEnum>> statusToResults =
                 results.stream().collect(
                         Collectors.groupingBy(result -> result.getTransactionStatus()));
 
         if (statusToResults.get(PROHIBITED) != null) {
             String justificationsConcatenated = toJustificationsConcatenated(statusToResults.get(PROHIBITED));
-            return new TransactionApprovalVerdict(PROHIBITED, justificationsConcatenated);
+            return new Dto.TransactionApprovalVerdict(PROHIBITED, justificationsConcatenated);
         } else if (statusToResults.get(MANUAL_PROCESSING) != null) {
             String justificationsConcatenated = toJustificationsConcatenated(statusToResults.get(MANUAL_PROCESSING));
-            return new TransactionApprovalVerdict(MANUAL_PROCESSING, justificationsConcatenated);
+            return new Dto.TransactionApprovalVerdict(MANUAL_PROCESSING, justificationsConcatenated);
         } else {
             if (statusToResults.get(ALLOWED) == null) {
                 throw new CustomExceptions.FailedPostconditionException("Expected at least one %s result".formatted(ALLOWED));
             }
             String justificationsConcatenated = toJustificationsConcatenated(statusToResults.get(ALLOWED));
-            return new TransactionApprovalVerdict(ALLOWED, justificationsConcatenated);
+            return new Dto.TransactionApprovalVerdict(ALLOWED, justificationsConcatenated);
         }
-    }
-
-    public static TransactionValidationEntity toEntity(ValidateTransactionRequest request,
-                                                       TransactionApprovalVerdict approvalVerdict) {
-        return new TransactionValidationEntity(request.amount(), request.ip(), request.number(), request.region(),
-                request.date(), approvalVerdict.transactionStatus(), approvalVerdict.statusJustification());
     }
 
     private static String toJustificationsConcatenated(Collection<TransactionValidationResultEnum> validationResults) {
@@ -121,21 +115,21 @@ public class TransactionValidationCalculations {
         return transactions.stream().map(transaction -> transaction.getIpAddress()).filter(ip -> !ip.equals(ipAddress)).collect(Collectors.toSet()).size();
     }
 
-    private static int countTransactionsWithDifferentRegion(RegionCodeEnum region,
+    private static int countTransactionsWithDifferentRegion(Enum.RegionCode region,
                                                             List<TransactionValidationEntity> transactions) {
         return transactions.stream().map(transaction -> transaction.getRegionCode()).filter(reg -> !reg.equals(region)).collect(Collectors.toSet()).size();
     }
 
-    private static TransactionApprovalVerdict toTransactionApprovalVerdict(Set<TransactionValidationResultEnum> validationResults) {
+    private static Dto.TransactionApprovalVerdict toTransactionApprovalVerdict(Set<TransactionValidationResultEnum> validationResults) {
         var transactionStatus = validationResults.iterator().next().getTransactionStatus();
         String justificationsConcatenated = toJustificationsConcatenated(validationResults);
 
-        return new TransactionApprovalVerdict(transactionStatus, justificationsConcatenated);
+        return new Dto.TransactionApprovalVerdict(transactionStatus, justificationsConcatenated);
     }
 
     @Getter
     @RequiredArgsConstructor
-    public enum TransactionValidationResultEnum {
+    enum TransactionValidationResultEnum {
         IP_BLACKLISTED(PROHIBITED, "ip"),
         CREDIT_CARD_BLACKLISTED(PROHIBITED, "card-number"),
         MORE_THAN_TWO_OTHER_IPADDRESSES(PROHIBITED, "ip-correlation"),
@@ -146,14 +140,8 @@ public class TransactionValidationCalculations {
         AMOUNT_LESS_EQUAL_1500(MANUAL_PROCESSING, "amount"),
         AMOUNT_LESS_EQUAL_200(ALLOWED, "none");
 
-        private final TransactionStatusEnum transactionStatus;
+        private final Enum.TransactionStatus transactionStatus;
         private final String statusJustification;
     }
 
-    public enum TransactionStatusEnum {
-        PROHIBITED, MANUAL_PROCESSING, ALLOWED
-    }
-
-    public record TransactionApprovalVerdict(TransactionStatusEnum transactionStatus, String statusJustification) {
-    }
 }

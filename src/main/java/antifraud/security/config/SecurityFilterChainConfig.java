@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.io.IOException;
 
-import static antifraud.security.datastore.SecurityRoleEnum.*;
+import static antifraud.security.Enum.SecurityRole.*;
 
 @Slf4j
 @Configuration

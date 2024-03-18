@@ -2,10 +2,9 @@ package antifraud.transactionvalidation.web;
 
 import antifraud.common.Regexp;
 import antifraud.common.Uri;
-import antifraud.transactionvalidation.RegionCodeEnum;
+import antifraud.transactionvalidation.Dto;
+import antifraud.transactionvalidation.Enum;
 import antifraud.transactionvalidation.service.ITransactionValidationService;
-import antifraud.transactionvalidation.service.TransactionValidationCalculations;
-import antifraud.transactionvalidation.service.TransactionValidationCalculations.TransactionStatusEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -30,7 +29,8 @@ public class AntifraudController {
     @PostMapping(Uri.API_ANTIFRAUD_TRANSACTION)
     public ResponseEntity<ValidateTransactionResponse> validateTransaction(@Valid @RequestBody ValidateTransactionRequest request) {
         log.debug("validateTransaction for request: " + request);
-        var transactionStatus = service.getTransactionApprovalStatus(request);
+        var transactionStatus = service.getTransactionApprovalStatus(request.amount(), request.ip(), request.number(),
+                request.region(), request.date());
         return ResponseEntity.ok(new ValidateTransactionResponse(transactionStatus));
     }
 
@@ -45,12 +45,12 @@ public class AntifraudController {
             @Min(1) long amount,
             @NotBlank @Pattern(regexp = Regexp.IP_ADDRESS) String ip,
             @NotBlank @CreditCardNumber String number,
-            RegionCodeEnum region,
+            Enum.RegionCode region,
             LocalDateTime date) {
     }
 
-    public record ValidateTransactionResponse(TransactionStatusEnum result, String info) {
-        ValidateTransactionResponse(TransactionValidationCalculations.TransactionApprovalVerdict verdict) {
+    public record ValidateTransactionResponse(Enum.TransactionStatus result, String info) {
+        ValidateTransactionResponse(Dto.TransactionApprovalVerdict verdict) {
             this(verdict.transactionStatus(), verdict.statusJustification());
         }
     }

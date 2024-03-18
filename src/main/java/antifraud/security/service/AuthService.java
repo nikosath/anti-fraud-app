@@ -2,9 +2,8 @@ package antifraud.security.service;
 
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
-import antifraud.security.LockOperationEnum;
+import antifraud.security.Enum;
 import antifraud.security.datastore.IUserProfileStore;
-import antifraud.security.datastore.SecurityRoleEnum;
 import antifraud.security.datastore.UserProfile;
 import antifraud.security.datastore.UserProfileFactory;
 import jakarta.annotation.PostConstruct;
@@ -18,15 +17,15 @@ import java.util.Optional;
 import java.util.Set;
 
 import static antifraud.error.ErrorEnum.*;
-import static antifraud.security.datastore.SecurityRoleEnum.MERCHANT;
-import static antifraud.security.datastore.SecurityRoleEnum.SUPPORT;
+import static antifraud.security.Enum.SecurityRole.MERCHANT;
+import static antifraud.security.Enum.SecurityRole.SUPPORT;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class AuthService extends IAuthService {
 
-    public static final Set<SecurityRoleEnum> ALLOWED_ROLES = Set.of(SUPPORT, MERCHANT);
+    public static final Set<Enum.SecurityRole> ALLOWED_ROLES = Set.of(SUPPORT, MERCHANT);
     private final IUserProfileStore userProfileStore;
     private final PasswordEncoder passwordEncoder;
     private boolean isFirstUserCreation;
@@ -70,7 +69,7 @@ public class AuthService extends IAuthService {
     }
 
     @Override
-    public Result<ErrorEnum, UserProfile> updateUserRole(String username, SecurityRoleEnum role) {
+    public Result<ErrorEnum, UserProfile> updateUserRole(String username, Enum.SecurityRole role) {
         Result<ErrorEnum, UserProfile> result = validateAndGetUser(username, role);
         if (result.isSuccess()) {
             UserProfile user = result.getSuccess();
@@ -81,21 +80,21 @@ public class AuthService extends IAuthService {
     }
 
     @Override
-    public Result<ErrorEnum, LockOperationEnum> updateUserLockStatus(String username, LockOperationEnum operation) {
+    public Result<ErrorEnum, Enum.LockOperation> updateUserLockStatus(String username, Enum.LockOperation operation) {
         Optional<UserProfile> userOpt = userProfileStore.findByUsernameIgnoreCase(username);
         if (userOpt.isEmpty()) {
             return Result.error(ENTITY_NOT_FOUND);
         }
         UserProfile user = userOpt.get();
-        if (SecurityRoleEnum.ADMINISTRATOR.equals(user.getRole())) {
+        if (Enum.SecurityRole.ADMINISTRATOR.equals(user.getRole())) {
             return Result.error(INVALID_ARGUMENT);
         }
-        user.setAccountNonLocked(LockOperationEnum.toIsAccountUnlocked(operation));
+        user.setAccountNonLocked(Enum.LockOperation.toIsAccountUnlocked(operation));
         UserProfile saved = userProfileStore.save(user);
-        return Result.success(LockOperationEnum.fromIsAccountUnlocked(saved.isAccountNonLocked()));
+        return Result.success(Enum.LockOperation.fromIsAccountUnlocked(saved.isAccountNonLocked()));
     }
 
-    private Result<ErrorEnum, UserProfile> validateAndGetUser(String username, SecurityRoleEnum role) {
+    private Result<ErrorEnum, UserProfile> validateAndGetUser(String username, Enum.SecurityRole role) {
         if (!ALLOWED_ROLES.contains(role)) {
             // TODO: add error msg to Result
 //            return Result.error(ARGUMENT_NOT_VALID, "Allowed roles: " + ALLOWED_ROLES);

@@ -15,8 +15,8 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-import static antifraud.security.LockOperationEnum.UNLOCK;
-import static antifraud.transactionvalidation.service.TransactionValidationCalculations.TransactionStatusEnum.ALLOWED;
+import static antifraud.security.Enum.LockOperation.UNLOCK;
+import static antifraud.transactionvalidation.Enum.TransactionStatus.ALLOWED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -46,7 +46,7 @@ public class AntifraudControllerIT {
         long amount = 150L;
         String ip = "169.254.123.229";
         String cardNumber = "4000008449433403";
-        ValidateTransactionRequest body = new ValidateTransactionRequest(amount, ip, cardNumber, RegionCodeEnum.EAP,
+        ValidateTransactionRequest body = new ValidateTransactionRequest(amount, ip, cardNumber, Enum.RegionCode.EAP,
                 LocalDateTime.of(2023, 1, 1, 0, 0));
         var request = new HttpEntity<>(body, headers);
 

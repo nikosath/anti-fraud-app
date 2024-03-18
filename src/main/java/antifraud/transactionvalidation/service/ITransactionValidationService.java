@@ -1,7 +1,12 @@
 package antifraud.transactionvalidation.service;
 
+import antifraud.transactionvalidation.Dto;
+import antifraud.transactionvalidation.Enum;
 import antifraud.transactionvalidation.web.AntifraudController;
 
+import java.time.LocalDateTime;
+
 public interface ITransactionValidationService {
-    TransactionValidationCalculations.TransactionApprovalVerdict getTransactionApprovalStatus(AntifraudController.ValidateTransactionRequest request);
+    Dto.TransactionApprovalVerdict getTransactionApprovalStatus(long amount, String ip, String number,
+                                                                Enum.RegionCode regionCode, LocalDateTime date);
 }

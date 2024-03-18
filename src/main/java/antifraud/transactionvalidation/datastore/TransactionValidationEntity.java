@@ -1,8 +1,7 @@
 package antifraud.transactionvalidation.datastore;
 
 import antifraud.common.Regexp;
-import antifraud.transactionvalidation.RegionCodeEnum;
-import antifraud.transactionvalidation.service.TransactionValidationCalculations;
+import antifraud.transactionvalidation.Enum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,13 +30,13 @@ public class TransactionValidationEntity {
     @Min(1) long amount;
     @NotBlank @Pattern(regexp = Regexp.IP_ADDRESS) String ipAddress;
     @NotBlank @CreditCardNumber String creditCardNumber;
-    RegionCodeEnum regionCode;
+    Enum.RegionCode regionCode;
     LocalDateTime transactionDateTime;
-    TransactionValidationCalculations.TransactionStatusEnum transactionStatus;
+    Enum.TransactionStatus transactionStatus;
     String statusJustification;
 
-    public TransactionValidationEntity(long amount, String ipAddress, String creditCardNumber, RegionCodeEnum regionCode, LocalDateTime transactionDateTime,
-                                       TransactionValidationCalculations.TransactionStatusEnum transactionStatus,
+    public TransactionValidationEntity(long amount, String ipAddress, String creditCardNumber, Enum.RegionCode regionCode, LocalDateTime transactionDateTime,
+                                       Enum.TransactionStatus transactionStatus,
                                        String statusJustification) {
         this.amount = amount;
         this.ipAddress = ipAddress;
