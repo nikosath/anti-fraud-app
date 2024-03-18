@@ -7,12 +7,12 @@ import lombok.RequiredArgsConstructor;
 public class UserProfileFactory {
 
     // TODO: refactor usages like 'new UserProfileFactory().admin'
-    public static UserProfile newAdmin(String name, String username, String password) {
-        return UserProfile.with(name, username, password, Enum.SecurityRole.ADMINISTRATOR, true);
+    public static UserProfileEntity newAdmin(String name, String username, String password) {
+        return UserProfileEntity.with(name, username, password, Enum.SecurityRole.ADMINISTRATOR, true);
     }
 
-    public static UserProfile newMerchant(String name, String username, String password) {
-        return UserProfile.with(name, username, password, Enum.SecurityRole.MERCHANT, false);
+    public static UserProfileEntity newMerchant(String name, String username, String password) {
+        return UserProfileEntity.with(name, username, password, Enum.SecurityRole.MERCHANT, false);
     }
 
 }

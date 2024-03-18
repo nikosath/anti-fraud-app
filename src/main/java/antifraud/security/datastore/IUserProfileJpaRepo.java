@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 // TODO: change id type
-public interface IUserProfileJpaRepo extends ListCrudRepository<UserProfile, Long> {
-    Optional<UserProfile> findByUsernameIgnoreCase(String username);
+public interface IUserProfileJpaRepo extends ListCrudRepository<UserProfileEntity, Long> {
+    Optional<UserProfileEntity> findByUsernameIgnoreCase(String username);
 
     boolean existsByUsernameIgnoreCase(String username);
 
-    List<UserProfile> findAllByOrderByIdAsc();
+    List<UserProfileEntity> findAllByOrderByIdAsc();
 
     @Transactional
-    List<UserProfile> deleteByUsernameIgnoreCase(String username);
+    List<UserProfileEntity> deleteByUsernameIgnoreCase(String username);
 }

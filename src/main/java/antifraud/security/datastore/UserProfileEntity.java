@@ -18,12 +18,12 @@ import java.util.Set;
 @ToString
 //@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
-public class UserProfile implements UserDetails, Comparable<UserProfile> {
+public class UserProfileEntity implements UserDetails, Comparable<UserProfileEntity> {
     @Id
 //    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    // TODO: create a separate User entity. User 1to1 UserProfile
+    // TODO: create a separate User entity. User 1to1 UserProfileEntity
     private String name;
     @Column(unique = true)
     private String username;
@@ -39,11 +39,11 @@ public class UserProfile implements UserDetails, Comparable<UserProfile> {
 //    private boolean credentialsNonExpired = true;
 //    private boolean enabled = true;
 
-    public static UserProfile with(String name, String username, String password, Enum.SecurityRole role, boolean accountNonLocked) {
-        return new UserProfile(name, username, password, role, accountNonLocked);
+    public static UserProfileEntity with(String name, String username, String password, Enum.SecurityRole role, boolean accountNonLocked) {
+        return new UserProfileEntity(name, username, password, role, accountNonLocked);
     }
 
-    private UserProfile(String name, String username, String password, Enum.SecurityRole role, boolean accountNonLocked) {
+    private UserProfileEntity(String name, String username, String password, Enum.SecurityRole role, boolean accountNonLocked) {
         this.name = name;
         setUsername(username);
         this.password = password;
@@ -92,7 +92,7 @@ public class UserProfile implements UserDetails, Comparable<UserProfile> {
     }
 
     @Override
-    public int compareTo(UserProfile other) {
+    public int compareTo(UserProfileEntity other) {
         return Long.compare(this.getId(), other.getId());
     }
 }

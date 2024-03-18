@@ -5,7 +5,7 @@ import antifraud.error.Result;
 import antifraud.security.Enum;
 import antifraud.security.config.UserPasswordEncoder;
 import antifraud.security.datastore.FakeUserProfileDatastore;
-import antifraud.security.datastore.UserProfile;
+import antifraud.security.datastore.UserProfileEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +26,9 @@ class AuthServiceTest {
         authService.createUser("Name1", "user1", "pass1"); // create MERCHANT
 
         Enum.SecurityRole role = Enum.SecurityRole.SUPPORT;
-        Result<ErrorEnum, UserProfile> result = authService.updateUserRole("user1", role);
+        var result = authService.updateUserRole("user1", role);
 
-        assertEquals(role, result.getSuccess().getRole());
+        assertEquals(role, result.getSuccess().role());
     }
 
 }

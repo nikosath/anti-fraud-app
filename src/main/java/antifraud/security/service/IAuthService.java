@@ -3,7 +3,7 @@ package antifraud.security.service;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
 import antifraud.security.Enum;
-import antifraud.security.datastore.UserProfile;
+import antifraud.security.Dto.UserProfile;
 
 import java.util.List;
 

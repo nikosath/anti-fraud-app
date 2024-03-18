@@ -1,8 +1,7 @@
 package antifraud.security.config;
 
-import antifraud.security.Enum;
 import antifraud.security.datastore.IUserProfileStore;
-import antifraud.security.datastore.UserProfile;
+import antifraud.security.datastore.UserProfileEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,7 @@ public class UserDetailsServiceConfig {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
                 log.debug("loadUserByUsername username = " + username);
-                Optional<UserProfile> userOpt = store.findByUsernameIgnoreCase(username);
+                Optional<UserProfileEntity> userOpt = store.findByUsernameIgnoreCase(username);
                 userOpt.ifPresent(user -> log.debug("user = " + user));
                 return userOpt.orElseThrow(() -> new UsernameNotFoundException("username not found"));
             }
@@ -34,9 +33,9 @@ public class UserDetailsServiceConfig {
     }
 
 //    private void createUsersForTesting(IUserProfileStore store) {
-//        var adminUser = UserProfile.with("Admin1", "admin1", passwordEncoder().encode("admin-pass1"),
+//        var adminUser = UserProfileEntity.with("Admin1", "admin1", passwordEncoder().encode("admin-pass1"),
 //                Enum.SecurityRole.ADMINISTRATOR, true);
-//        var supportUser = UserProfile.with("Support1", "support1", passwordEncoder().encode("support-pass1"),
+//        var supportUser = UserProfileEntity.with("Support1", "support1", passwordEncoder().encode("support-pass1"),
 //                Enum.SecurityRole.SUPPORT, true);
 //        store.save(adminUser);
 //        store.save(supportUser);

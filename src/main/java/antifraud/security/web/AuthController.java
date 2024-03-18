@@ -4,8 +4,8 @@ import antifraud.common.Uri;
 import antifraud.common.WebUtils;
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
+import antifraud.security.Dto;
 import antifraud.security.Enum;
-import antifraud.security.datastore.UserProfile;
 import antifraud.security.service.IAuthService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -28,7 +28,7 @@ public class AuthController {
     @PostMapping(Uri.API_AUTH_USER)
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest req) {
         log.debug("createUser req = " + req);
-        Result<ErrorEnum, UserProfile> result = authService.createUser(req.name(), req.username(), req.password());
+        Result<ErrorEnum, Dto.UserProfile> result = authService.createUser(req.name(), req.username(), req.password());
         if (result.isSuccess()) {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserResponse.fromUserProfile(result.getSuccess()));
@@ -39,7 +39,7 @@ public class AuthController {
     @GetMapping(Uri.API_AUTH_LIST)
     public List<UserResponse> listUsers() {
         log.debug("listUsers");
-        List<UserProfile> userProfiles = authService.listUsers();
+        List<Dto.UserProfile> userProfiles = authService.listUsers();
         return userProfiles.stream()
                 .map(UserResponse::fromUserProfile)
                 .toList();
@@ -48,10 +48,10 @@ public class AuthController {
     @DeleteMapping(Uri.API_AUTH_USER + Uri.USERNAME)
     public ResponseEntity<DeleteResponse> deleteUser(@PathVariable String username) {
         log.debug("deleteUser username = " + username);
-        Result<ErrorEnum, UserProfile> result = authService.deleteUser(username);
+        Result<ErrorEnum, Dto.UserProfile> result = authService.deleteUser(username);
         if (result.isSuccess()) {
             return ResponseEntity.ok(
-                    new DeleteResponse(result.getSuccess().getUsername(), "Deleted successfully!"));
+                    new DeleteResponse(result.getSuccess().username(), "Deleted successfully!"));
         }
         return WebUtils.errorToResponseEntity(result.getError());
     }
@@ -59,7 +59,7 @@ public class AuthController {
     @PutMapping(Uri.API_AUTH_ROLE)
     public ResponseEntity<UserResponse> updateUserRole(@Valid @RequestBody UserRoleRequest req) {
         log.debug("updateUserRole req = " + req);
-        Result<ErrorEnum, UserProfile> result = authService.updateUserRole(req.username(), req.role());
+        Result<ErrorEnum, Dto.UserProfile> result = authService.updateUserRole(req.username(), req.role());
         if (result.isSuccess()) {
             return ResponseEntity.ok(UserResponse.fromUserProfile(result.getSuccess()));
         }
@@ -81,8 +81,8 @@ public class AuthController {
     }
 
     public record UserResponse(Long id, String name, String username, Enum.SecurityRole role) {
-        static UserResponse fromUserProfile(UserProfile user) {
-            return new UserResponse(user.getId(), user.getName(), user.getUsername(), user.getRole());
+        static UserResponse fromUserProfile(Dto.UserProfile user) {
+            return new UserResponse(user.id(), user.name(), user.username(), user.role());
         }
     }
 

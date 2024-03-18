@@ -2,9 +2,10 @@ package antifraud.security.service;
 
 import antifraud.error.ErrorEnum;
 import antifraud.error.Result;
+import antifraud.security.Dto;
 import antifraud.security.Enum;
 import antifraud.security.datastore.IUserProfileStore;
-import antifraud.security.datastore.UserProfile;
+import antifraud.security.datastore.UserProfileEntity;
 import antifraud.security.datastore.UserProfileFactory;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +37,13 @@ public class AuthService extends IAuthService {
     }
 
     @Override
-    public Result<ErrorEnum, UserProfile> createUser(String name, String username, String password) {
+    public Result<ErrorEnum, Dto.UserProfile> createUser(String name, String username, String password) {
         if (userProfileStore.existsByUsernameIgnoreCase(username)) {
             return Result.error(ENTITY_ALREADY_EXISTS);
         }
 
         String encodedPassword = passwordEncoder.encode(password);
-        UserProfile userProfile;
+        UserProfileEntity userProfile;
         if (isFirstUserCreation) {
             userProfile = UserProfileFactory.newAdmin(name, username, encodedPassword);
             isFirstUserCreation = false;
@@ -50,61 +51,77 @@ public class AuthService extends IAuthService {
             userProfile = UserProfileFactory.newMerchant(name, username, encodedPassword);
         }
 
-        UserProfile saved = userProfileStore.save(userProfile);
-        return Result.success(saved);
+        UserProfileEntity saved = userProfileStore.save(userProfile);
+
+        return Result.success(toDto(saved));
+    }
+
+    private Dto.UserProfile toDto(UserProfileEntity saved) {
+        return Dto.UserProfile.builder()
+                .id(saved.getId())
+                .name(saved.getName())
+                .username(saved.getUsername())
+                .role(saved.getRole())
+                .build();
     }
 
     @Override
-    public List<UserProfile> listUsers() {
-        return userProfileStore.findAllByOrderByIdAsc();
+    public List<Dto.UserProfile> listUsers() {
+        return toDtoList(userProfileStore.findAllByOrderByIdAsc());
+    }
+
+    private List<Dto.UserProfile> toDtoList(List<UserProfileEntity> allByOrderByIdAsc) {
+        return allByOrderByIdAsc.stream()
+                .map(this::toDto)
+                .toList();
     }
 
     @Override
-    public Result<ErrorEnum, UserProfile> deleteUser(String username) {
+    public Result<ErrorEnum, Dto.UserProfile> deleteUser(String username) {
         if (!userProfileStore.existsByUsernameIgnoreCase(username)) {
             return Result.error(ENTITY_NOT_FOUND);
         }
         var deleted = userProfileStore.deleteByUsernameIgnoreCase(username).orElseThrow();
-        return Result.success(deleted);
+        return Result.success(toDto(deleted));
     }
 
     @Override
-    public Result<ErrorEnum, UserProfile> updateUserRole(String username, Enum.SecurityRole role) {
-        Result<ErrorEnum, UserProfile> result = validateAndGetUser(username, role);
+    public Result<ErrorEnum, Dto.UserProfile> updateUserRole(String username, Enum.SecurityRole role) {
+        Result<ErrorEnum, UserProfileEntity> result = validateAndGetUser(username, role);
         if (result.isSuccess()) {
-            UserProfile user = result.getSuccess();
+            UserProfileEntity user = result.getSuccess();
             user.setRole(role);
-            return Result.success(userProfileStore.save(user));
+            return Result.success(toDto(userProfileStore.save(user)));
         }
-        return result;
+        return Result.error(result.getError());
     }
 
     @Override
     public Result<ErrorEnum, Enum.LockOperation> updateUserLockStatus(String username, Enum.LockOperation operation) {
-        Optional<UserProfile> userOpt = userProfileStore.findByUsernameIgnoreCase(username);
+        Optional<UserProfileEntity> userOpt = userProfileStore.findByUsernameIgnoreCase(username);
         if (userOpt.isEmpty()) {
             return Result.error(ENTITY_NOT_FOUND);
         }
-        UserProfile user = userOpt.get();
+        UserProfileEntity user = userOpt.get();
         if (Enum.SecurityRole.ADMINISTRATOR.equals(user.getRole())) {
             return Result.error(INVALID_ARGUMENT);
         }
         user.setAccountNonLocked(Enum.LockOperation.toIsAccountUnlocked(operation));
-        UserProfile saved = userProfileStore.save(user);
+        UserProfileEntity saved = userProfileStore.save(user);
         return Result.success(Enum.LockOperation.fromIsAccountUnlocked(saved.isAccountNonLocked()));
     }
 
-    private Result<ErrorEnum, UserProfile> validateAndGetUser(String username, Enum.SecurityRole role) {
+    private Result<ErrorEnum, UserProfileEntity> validateAndGetUser(String username, Enum.SecurityRole role) {
         if (!ALLOWED_ROLES.contains(role)) {
             // TODO: add error msg to Result
 //            return Result.error(ARGUMENT_NOT_VALID, "Allowed roles: " + ALLOWED_ROLES);
             return Result.error(INVALID_ARGUMENT);
         }
-        Optional<UserProfile> userOpt = userProfileStore.findByUsernameIgnoreCase(username);
+        Optional<UserProfileEntity> userOpt = userProfileStore.findByUsernameIgnoreCase(username);
         if (userOpt.isEmpty()) {
             return Result.error(ENTITY_NOT_FOUND);
         }
-        UserProfile user = userOpt.get();
+        UserProfileEntity user = userOpt.get();
         if (user.getRole().equals(role)) {
             return Result.error(STATE_ALREADY_EXISTS);
         }

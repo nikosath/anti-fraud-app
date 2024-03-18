@@ -8,11 +8,11 @@ import java.util.Optional;
 public class FakeUserProfileDatastore implements IUserProfileStore {
 
     long idSequence = 0L;
-    Map<Long, UserProfile> idToUserProfile = new HashMap<>();
-    Map<String, UserProfile> usernameToUserProfile = new HashMap<>();
+    Map<Long, UserProfileEntity> idToUserProfile = new HashMap<>();
+    Map<String, UserProfileEntity> usernameToUserProfile = new HashMap<>();
 
     @Override
-    public synchronized UserProfile save(UserProfile userProfile) {
+    public synchronized UserProfileEntity save(UserProfileEntity userProfile) {
         if (userProfile.getId() == null) {
             idSequence += 1;
             userProfile.setId(idSequence);
@@ -24,7 +24,7 @@ public class FakeUserProfileDatastore implements IUserProfileStore {
     }
 
     @Override
-    public synchronized Optional<UserProfile> findByUsernameIgnoreCase(String username) {
+    public synchronized Optional<UserProfileEntity> findByUsernameIgnoreCase(String username) {
         return Optional.of(usernameToUserProfile.get(username));
     }
 
@@ -34,21 +34,21 @@ public class FakeUserProfileDatastore implements IUserProfileStore {
     }
 
     @Override
-    public synchronized List<UserProfile> findAllByOrderByIdAsc() {
+    public synchronized List<UserProfileEntity> findAllByOrderByIdAsc() {
         return idToUserProfile.values().stream().sorted().toList();
     }
 
     // TODO: refactor to use Stream api
     @Override
-    public synchronized Optional<UserProfile> deleteByUsernameIgnoreCase(String username) {
-        Optional<UserProfile> userOpt = findByUsernameIgnoreCase(username);
+    public synchronized Optional<UserProfileEntity> deleteByUsernameIgnoreCase(String username) {
+        Optional<UserProfileEntity> userOpt = findByUsernameIgnoreCase(username);
         if (userOpt.isEmpty()) {
             return Optional.empty();
         }
-        UserProfile user = userOpt.get();
+        UserProfileEntity user = userOpt.get();
         idToUserProfile.remove(user.getId());
         usernameToUserProfile.remove(username);
-        return Optional.of(user);
+        return userOpt;
     }
 
     @Override

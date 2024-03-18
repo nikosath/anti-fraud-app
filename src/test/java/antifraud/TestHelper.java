@@ -1,5 +1,7 @@
 package antifraud;
 
+import antifraud.security.Dto;
+import antifraud.security.Enum;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +38,9 @@ public class TestHelper {
     public <T> T deserializeToType(ResultActions result, Class<T> type) throws Exception {
         String responseAsString = result.andReturn().getResponse().getContentAsString();
         return mapper.readValue(responseAsString, type);
+    }
+    public static Dto.UserProfile newAdmin(Long id, String name, String username, String password) {
+        return new Dto.UserProfile(id, name, username, password, Enum.SecurityRole.ADMINISTRATOR, true);
     }
 
     public enum TestBehaviorEnum {

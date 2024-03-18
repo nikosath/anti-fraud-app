@@ -15,17 +15,17 @@ public class UserProfileDatastore implements IUserProfileStore {
     private final IUserProfileJpaRepo repo;
 
     @Override
-    public UserProfile save(UserProfile userProfile) {
+    public UserProfileEntity save(UserProfileEntity userProfile) {
         return repo.save(userProfile);
     }
 
 //    @Override
-//    public UserProfile save(String name, String username, String encodedPassword) {
+//    public UserProfileEntity save(String name, String username, String encodedPassword) {
 //        return repo.save(new UserProfileFactory().admin(name, username, encodedPassword));
 //    }
 
     @Override
-    public Optional<UserProfile> findByUsernameIgnoreCase(String username) {
+    public Optional<UserProfileEntity> findByUsernameIgnoreCase(String username) {
         return repo.findByUsernameIgnoreCase(username);
     }
 
@@ -35,13 +35,13 @@ public class UserProfileDatastore implements IUserProfileStore {
     }
 
     @Override
-    public List<UserProfile> findAllByOrderByIdAsc() {
+    public List<UserProfileEntity> findAllByOrderByIdAsc() {
         return repo.findAllByOrderByIdAsc();
     }
 
     @Override
-    public Optional<UserProfile> deleteByUsernameIgnoreCase(String username) {
-        List<UserProfile> deleted = repo.deleteByUsernameIgnoreCase(username);
+    public Optional<UserProfileEntity> deleteByUsernameIgnoreCase(String username) {
+        List<UserProfileEntity> deleted = repo.deleteByUsernameIgnoreCase(username);
         if (deleted.size() > 1) {
             throw new RuntimeException(
                     String.format("Deleted %s number of entities. The expectation was to delete only one.", deleted.size()));
