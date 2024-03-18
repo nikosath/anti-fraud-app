@@ -34,7 +34,7 @@ public class TransactionValidationCalculations {
         return transactionApprovalVerdict;
     }
 
-    public static Set<TransactionValidationResultEnum> getTransactionValidationResultEnums(
+    private static Set<TransactionValidationResultEnum> getTransactionValidationResultEnums(
             long amount, boolean isIpBlacklisted, boolean isCreditCardBlacklisted,
             long countTransactionsWithDifferentIp, long countTransactionsWithDifferentRegion) {
 
@@ -48,7 +48,7 @@ public class TransactionValidationCalculations {
         return results;
     }
 
-    public static Dto.TransactionApprovalVerdict determineTransactionApprovalVerdict(Set<TransactionValidationResultEnum> results) {
+    private static Dto.TransactionApprovalVerdict determineTransactionApprovalVerdict(Set<TransactionValidationResultEnum> results) {
         Map<Enum.TransactionStatus, List<TransactionValidationResultEnum>> statusToResults =
                 results.stream().collect(
                         Collectors.groupingBy(result -> result.getTransactionStatus()));
