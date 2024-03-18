@@ -61,7 +61,7 @@ public class TransactionValidationCalculations {
             return new Dto.TransactionApprovalVerdict(MANUAL_PROCESSING, justificationsConcatenated);
         } else {
             if (statusToResults.get(ALLOWED) == null) {
-                throw new CustomExceptions.FailedPostconditionException("Expected at least one %s result".formatted(ALLOWED));
+                throw new CustomExceptions.FailedPostconditionException("Missing %s result".formatted(ALLOWED));
             }
             String justificationsConcatenated = toJustificationsConcatenated(statusToResults.get(ALLOWED));
             return new Dto.TransactionApprovalVerdict(ALLOWED, justificationsConcatenated);

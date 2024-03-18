@@ -44,7 +44,7 @@ public class IpAddressEntityDatastore implements IIpAddressEntityDatastore {
     public Result<ErrorEnum, IpAddressEntity> deleteIpAddress(String ip) {
         long countByIp = repo.countByIp(ip);
         if (countByIp > 1) {
-            throw new CustomExceptions.FailedPreconditionException(MULTIPLE_ENTITIES_FOUND.name());
+            throw new CustomExceptions.FailedPreconditionException("Should not be more than one entity with the same ip");
         }
         if (countByIp == 0) {
             return Result.error(ENTITY_NOT_FOUND);
