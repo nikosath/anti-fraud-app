@@ -17,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.io.IOException;
 
+import static antifraud.common.Uri.ASTERISK;
 import static antifraud.security.Enum.SecurityRole.*;
 
 @Slf4j
@@ -46,19 +47,22 @@ public class SecurityFilterChainConfig {
                 .authorizeHttpRequests(registry -> registry // manage access
                         // auth
                         .requestMatchers(HttpMethod.POST, Uri.API_AUTH_USER).permitAll()
-                        .requestMatchers(HttpMethod.DELETE, Uri.API_AUTH_USER + Uri.ASTERISK).hasRole(ADMINISTRATOR.name())
+                        .requestMatchers(HttpMethod.DELETE, Uri.API_AUTH_USER + ASTERISK).hasRole(ADMINISTRATOR.name())
                         .requestMatchers(HttpMethod.GET, Uri.API_AUTH_LIST).hasAnyRole(ADMINISTRATOR.name(), SUPPORT.name())
                         .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ACCESS).hasRole(ADMINISTRATOR.name())
                         .requestMatchers(HttpMethod.PUT, Uri.API_AUTH_ROLE).hasRole(ADMINISTRATOR.name())
                         // API_ANTIFRAUD_TRANSACTION
                         .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_TRANSACTION).hasRole(MERCHANT.name())
+                        .requestMatchers(HttpMethod.PUT, Uri.API_ANTIFRAUD_TRANSACTION).hasRole(SUPPORT.name())
+                        // API_ANTIFRAUD_HISTORY
+                        .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_HISTORY + ASTERISK).hasRole(SUPPORT.name())
                         // API_ANTIFRAUD_SUSPICIOUS_IP
                         .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
-                        .requestMatchers(HttpMethod.DELETE, Uri.API_ANTIFRAUD_SUSPICIOUS_IP + Uri.ASTERISK).hasRole(SUPPORT.name())
+                        .requestMatchers(HttpMethod.DELETE, Uri.API_ANTIFRAUD_SUSPICIOUS_IP + ASTERISK).hasRole(SUPPORT.name())
                         .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())
                         // API_ANTIFRAUD_STOLENCARD
                         .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_STOLENCARD).hasRole(SUPPORT.name())
-                        .requestMatchers(HttpMethod.DELETE, Uri.API_ANTIFRAUD_STOLENCARD + Uri.ASTERISK).hasRole(SUPPORT.name())
+                        .requestMatchers(HttpMethod.DELETE, Uri.API_ANTIFRAUD_STOLENCARD + ASTERISK).hasRole(SUPPORT.name())
                         .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_STOLENCARD).hasRole(SUPPORT.name())
                         // other
                         .requestMatchers(Uri.ERROR).permitAll()

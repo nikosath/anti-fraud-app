@@ -34,6 +34,7 @@ public class TransactionValidationEntity {
     LocalDateTime transactionDateTime;
     Enum.TransactionStatus transactionStatus;
     String statusJustification;
+    Enum.TransactionStatus feedback;
 
     public TransactionValidationEntity(long amount, String ipAddress, String creditCardNumber, Enum.RegionCode regionCode, LocalDateTime transactionDateTime,
                                        Enum.TransactionStatus transactionStatus,

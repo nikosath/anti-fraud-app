@@ -2,8 +2,8 @@ package antifraud.transactionvalidation;
 
 import antifraud.common.Uri;
 import antifraud.security.service.AuthService;
-import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionRequest;
-import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionResponse;
+import antifraud.transactionvalidation.web.TransactionValidationController.ValidateTransactionRequest;
+import antifraud.transactionvalidation.web.TransactionValidationController.ValidateTransactionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import static antifraud.transactionvalidation.Enum.TransactionStatus.ALLOWED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AntifraudControllerIT {
+public class TransactionValidationControllerIT {
 
     public static final String MERCHANT_USERNAME = "user1";
     public static final String MERCHANT_PASSWORD = "pass1";

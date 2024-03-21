@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,15 +19,22 @@ public class TransactionValidationDatastore implements ITransactionValidationDat
     }
 
     @Override
+    public Optional<TransactionValidationEntity> findById(Long id) {
+        return repo.findById(id);
+    }
+
+    @Override
     public List<TransactionValidationEntity> saveAll(Iterable<TransactionValidationEntity> transactionValidationEntity) {
         return repo.saveAll(transactionValidationEntity);
     }
 
     @Override
-    public List<TransactionValidationEntity> getTransactionValidationHistory(String creditCardNumber,
-                                                                             LocalDateTime fromDateTime,
-                                                                             LocalDateTime untilDateTime) {
-        return repo.findByCreditCardNumberAndTransactionDateTimeBetween(creditCardNumber, fromDateTime, untilDateTime);
+    public List<TransactionValidationEntity> getTransactionValidationHistoryOrderById() {
+        return repo.findAllByOrderById();
+    }
+    @Override
+    public List<TransactionValidationEntity> getTransactionValidationHistoryOrderById(String creditCardNumber) {
+        return repo.findByCreditCardNumberOrderById(creditCardNumber);
     }
 
     @Override

@@ -4,15 +4,18 @@ import antifraud.transactionvalidation.Enum;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ITransactionValidationDatastore {
     TransactionValidationEntity save(TransactionValidationEntity transactionValidationEntity);
 
+    Optional<TransactionValidationEntity> findById(Long id);
+
     List<TransactionValidationEntity> saveAll(Iterable<TransactionValidationEntity> transactionValidationEntity);
 
-    List<TransactionValidationEntity> getTransactionValidationHistory(String creditCardNumber,
-                                                                      LocalDateTime fromDateTime,
-                                                                      LocalDateTime untilDateTime);
+    List<TransactionValidationEntity> getTransactionValidationHistoryOrderById();
+
+    List<TransactionValidationEntity> getTransactionValidationHistoryOrderById(String creditCardNumber);
 
     long countTransactionsWithDifferentIpInLastHour(String creditCardNumber,
                                                     LocalDateTime transactionDateTime, String ipAddress);

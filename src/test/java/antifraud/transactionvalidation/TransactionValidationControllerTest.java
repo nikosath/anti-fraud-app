@@ -3,9 +3,9 @@ package antifraud.transactionvalidation;
 import antifraud.TestHelper;
 import antifraud.security.config.SecurityFilterChainConfig;
 import antifraud.transactionvalidation.service.FakeTransactionValidationService;
-import antifraud.transactionvalidation.web.AntifraudController;
-import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionRequest;
-import antifraud.transactionvalidation.web.AntifraudController.ValidateTransactionResponse;
+import antifraud.transactionvalidation.web.TransactionValidationController;
+import antifraud.transactionvalidation.web.TransactionValidationController.ValidateTransactionRequest;
+import antifraud.transactionvalidation.web.TransactionValidationController.ValidateTransactionResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +27,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Import({SecurityFilterChainConfig.class, FakeTransactionValidationService.class})
-@WebMvcTest(AntifraudController.class)
-class AntifraudControllerTest {
+@WebMvcTest(TransactionValidationController.class)
+class TransactionValidationControllerTest {
 
     static TestHelper testHelper;
     @Autowired

@@ -17,6 +17,7 @@ public class Uri {
 
     public static final String API_ANTIFRAUD = "/api/antifraud";
     public static final String API_ANTIFRAUD_TRANSACTION = "/api/antifraud/transaction";
+    public static final String API_ANTIFRAUD_HISTORY = "/api/antifraud/history";
     public static final String API_ANTIFRAUD_SUSPICIOUS_IP = "/api/antifraud/suspicious-ip";
     public static final String IP = "/{ip}";
     public static final String API_ANTIFRAUD_STOLENCARD = "/api/antifraud/stolencard";
