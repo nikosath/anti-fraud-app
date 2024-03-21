@@ -18,7 +18,7 @@ class TransactionValidationTest {
         long countTransactionsWithDifferentIp = 0;
         long countTransactionsWithDifferentRegion = 0;
         var approvalVerdict = TransactionValidationCalculations.getTransactionApprovalVerdict(amount, ipBlacklisted,
-                creditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion);
+                creditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion, 200, 1500);
         assertEquals(expectedStatus, approvalVerdict.transactionStatus());
         assertEquals(justification, approvalVerdict.statusJustification());
     }
@@ -33,7 +33,7 @@ class TransactionValidationTest {
         long countTransactionsWithDifferentIp = 0;
         long countTransactionsWithDifferentRegion = 0;
         var approvalVerdict = TransactionValidationCalculations.getTransactionApprovalVerdict(amount, ipBlacklisted,
-                creditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion);
+                creditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion, 200, 1500);
         assertEquals(expectedStatus, approvalVerdict.transactionStatus());
         assertEquals(justification, approvalVerdict.statusJustification());
     }
@@ -48,7 +48,7 @@ class TransactionValidationTest {
         long countTransactionsWithDifferentIp = 0;
         long countTransactionsWithDifferentRegion = 0;
         var approvalVerdict = TransactionValidationCalculations.getTransactionApprovalVerdict(amount, ipBlacklisted,
-                creditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion);
+                creditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion, 200, 1500);
         assertEquals(expectedStatus, approvalVerdict.transactionStatus());
         assertEquals(justification, approvalVerdict.statusJustification());
     }
@@ -65,7 +65,7 @@ class TransactionValidationTest {
         long countTransactionsWithDifferentIp = 0;
         long countTransactionsWithDifferentRegion = 0;
         var approvalVerdict = TransactionValidationCalculations.getTransactionApprovalVerdict(amount, ipBlacklisted,
-                creditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion);
+                creditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion, 200, 1500);
         assertEquals(expectedStatus, approvalVerdict.transactionStatus());
         assertEquals(justification, approvalVerdict.statusJustification());
     }

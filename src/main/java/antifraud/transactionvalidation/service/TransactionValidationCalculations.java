@@ -3,7 +3,6 @@ package antifraud.transactionvalidation.service;
 import antifraud.error.CustomExceptions;
 import antifraud.transactionvalidation.Dto;
 import antifraud.transactionvalidation.Enum;
-import antifraud.transactionvalidation.datastore.TransactionValidationEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,31 +19,28 @@ public class TransactionValidationCalculations {
     public static Dto.TransactionApprovalVerdict getTransactionApprovalVerdict(long amount, boolean isIpBlacklisted,
                                                                                boolean isCreditCardBlacklisted,
                                                                                long countTransactionsWithDifferentIp,
-                                                                               long countTransactionsWithDifferentRegion) {
+                                                                               long countTransactionsWithDifferentRegion,
+                                                                               long amountLimitForAllowed,
+                                                                               long amountLimitForManualProcessing) {
+
         log.debug("amount = " + amount + ", isIpBlacklisted = " + isIpBlacklisted + ", isCreditCardBlacklisted = " +
                 isCreditCardBlacklisted + ", countTransactionsWithDifferentIp = " + countTransactionsWithDifferentIp +
                 ", countTransactionsWithDifferentRegion = " + countTransactionsWithDifferentRegion);
 
-        Set<TransactionValidationResultEnum> results = getTransactionValidationResultEnums(amount, isIpBlacklisted,
-                isCreditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion);
-
+        Set<TransactionValidationResultEnum> results = getTransactionValidationResults(amount, isIpBlacklisted, isCreditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion, amountLimitForAllowed, amountLimitForManualProcessing);
+        log.debug("results = " + results);
         Dto.TransactionApprovalVerdict transactionApprovalVerdict = determineTransactionApprovalVerdict(results);
-
         log.debug("transactionApprovalVerdict = " + transactionApprovalVerdict);
         return transactionApprovalVerdict;
     }
 
-    private static Set<TransactionValidationResultEnum> getTransactionValidationResultEnums(
-            long amount, boolean isIpBlacklisted, boolean isCreditCardBlacklisted,
-            long countTransactionsWithDifferentIp, long countTransactionsWithDifferentRegion) {
-
+    private static Set<TransactionValidationResultEnum> getTransactionValidationResults(long amount, boolean isIpBlacklisted, boolean isCreditCardBlacklisted, long countTransactionsWithDifferentIp, long countTransactionsWithDifferentRegion, long amountLimitForAllowed, long amountLimitForManualProcessing) {
         Set<TransactionValidationResultEnum> results = new HashSet<>();
         results.addAll(
                 checkBlacklistViolations(isIpBlacklisted, isCreditCardBlacklisted));
-        results.add(checkAmountViolations(amount));
+        results.add(checkAmountViolations(amount, amountLimitForAllowed, amountLimitForManualProcessing));
         results.addAll(
                 checkTransactionHistoryValidations(countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion));
-        log.debug("results = " + results);
         return results;
     }
 
@@ -84,10 +80,11 @@ public class TransactionValidationCalculations {
         return results;
     }
 
-    private static TransactionValidationResultEnum checkAmountViolations(long amount) {
-        if (amount <= 200) {
+    private static TransactionValidationResultEnum checkAmountViolations(long amount, long amountLimitForAllowed,
+                                                                         long amountLimitForManualProcessing) {
+        if (amount <= amountLimitForAllowed) {
             return AMOUNT_LESS_EQUAL_200;
-        } else if (amount <= 1500) {
+        } else if (amount <= amountLimitForManualProcessing) {
             return AMOUNT_LESS_EQUAL_1500;
         } else {
             return AMOUNT_OVER_1500;

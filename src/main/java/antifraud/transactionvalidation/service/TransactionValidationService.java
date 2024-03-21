@@ -20,6 +20,7 @@ public class TransactionValidationService implements ITransactionValidationServi
     private final IIpAddressEntityDatastore ipDatastore;
     private final IStolenCardEntityDatastore cardDatastore;
     private final ITransactionValidationDatastore transactionDatastore;
+    private final IConfigProvider configProvider;
 
     public Dto.TransactionApprovalVerdict getTransactionApprovalStatus(long amount, String ip, String number,
                                                                        Enum.RegionCode regionCode, LocalDateTime date) {
@@ -30,13 +31,13 @@ public class TransactionValidationService implements ITransactionValidationServi
                 number, date, ip);
         long countTransactionsWithDifferentRegion = transactionDatastore.countTransactionsWithDifferentRegionInLastHour(
                 number, date, regionCode);
-//        List<TransactionValidationEntity> transactionValidationHistory = transactionDatastore.getTransactionValidationHistory(
-//                request.number(), request.date().minusHours(1), request.date()
-//        );
+        long amountLimitForAllowed = configProvider.getTransactionValidationConfig().amountLimitForAllowed();
+        long amountLimitForManualProcessing = configProvider.getTransactionValidationConfig().amountLimitForManualProcessing();
 
         // calculations
         Dto.TransactionApprovalVerdict approvalVerdict = getTransactionApprovalVerdict(amount, isIpBlacklisted,
-                isCreditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion);
+                isCreditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion,
+                amountLimitForAllowed, amountLimitForManualProcessing);
 
         // action
         transactionDatastore.save(toEntity(amount, ip, number, regionCode, date, approvalVerdict));
