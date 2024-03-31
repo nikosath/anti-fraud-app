@@ -16,6 +16,7 @@ import static antifraud.transactionvalidation.service.TransactionValidationConfi
 
 @RequiredArgsConstructor
 @Service
+// TODO: ConfigService is work in progress
 public class ConfigService implements IConfigProvider, IConfigChangedListener {
     private final IConfigRepo repo;
     @Getter

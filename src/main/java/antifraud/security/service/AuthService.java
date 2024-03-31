@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import static antifraud.security.Enum.SecurityRole.SUPPORT;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class AuthService extends IAuthService {
 
     public static final Set<Enum.SecurityRole> ALLOWED_ROLES = Set.of(SUPPORT, MERCHANT);
