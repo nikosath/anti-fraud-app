@@ -14,7 +14,7 @@ public interface ITransactionValidationService {
                                                                  Enum.RegionCode regionCode, LocalDateTime date);
 
 
-    Result<ErrorEnum, TransactionValidationEntity> updateVerdict(Long transactionId, Enum.TransactionStatus feedback);
+    Result<ErrorEnum, TransactionValidationEntity> overrideVerdict(Long transactionId, Enum.TransactionStatus feedback);
 
     List<TransactionValidationEntity> getTransactionValidationHistoryOrderById();
 

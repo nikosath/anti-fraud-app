@@ -41,12 +41,12 @@ public class TransactionValidationController {
     @PutMapping(Uri.API_ANTIFRAUD_TRANSACTION)
     public ResponseEntity<ValidationFeedbackResponse> provideValidationFeedback(@Valid @RequestBody ValidationFeedbackRequest request) {
         log.debug("provideValidationFeedback for request: " + request);
-        Result<ErrorEnum, TransactionValidationEntity> result = service.updateVerdict(
+        Result<ErrorEnum, TransactionValidationEntity> result = service.overrideVerdict(
                 request.transactionId(), request.feedback());
         if (result.isSuccess()) {
             return ResponseEntity.ok(new ValidationFeedbackResponse(result.getSuccess()));
         }
-        return errorToResponseEntity(result.getError());
+        return WebUtils.errorToResponseEntity(result.getError());
     }
 
     @GetMapping(Uri.API_ANTIFRAUD_HISTORY)
@@ -56,18 +56,10 @@ public class TransactionValidationController {
                 .toList();
     }
     @GetMapping(Uri.API_ANTIFRAUD_HISTORY + Uri.CARD_NUMBER)
-    public List<ValidationFeedbackResponse> getTransactions(@NotBlank @CreditCardNumber @PathVariable String cardNumber) {
+    public List<ValidationFeedbackResponse> getTransactionsByCardNumber(@NotBlank @CreditCardNumber @PathVariable String cardNumber) {
         return service.getTransactionValidationHistoryOrderById(cardNumber).stream()
                 .map(ValidationFeedbackResponse::new)
                 .toList();
-    }
-
-    private ResponseEntity<ValidationFeedbackResponse> errorToResponseEntity(ErrorEnum error) {
-        if (error == ErrorEnum.STATE_ALREADY_EXISTS) {
-            return ResponseEntity.unprocessableEntity().build();
-        } else {
-            return WebUtils.errorToResponseEntity(error);
-        }
     }
 
     /**

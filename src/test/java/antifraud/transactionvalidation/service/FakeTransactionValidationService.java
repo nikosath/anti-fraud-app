@@ -25,7 +25,7 @@ public class FakeTransactionValidationService implements ITransactionValidationS
 
 
     @Override
-    public Result<ErrorEnum, TransactionValidationEntity> updateVerdict(Long transactionId, Enum.TransactionStatus feedback) {
+    public Result<ErrorEnum, TransactionValidationEntity> overrideVerdict(Long transactionId, Enum.TransactionStatus feedback) {
         return Result.success(new TransactionValidationEntity());
     }
 

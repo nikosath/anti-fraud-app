@@ -10,22 +10,26 @@ import antifraud.transactionvalidation.datastore.ITransactionValidationDatastore
 import antifraud.transactionvalidation.datastore.TransactionValidationEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static antifraud.transactionvalidation.service.TransactionValidationCalculations.calculateNewAmountLimits;
+
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public class TransactionValidationService implements ITransactionValidationService {
 
     private final IIpAddressEntityDatastore ipDatastore;
     private final IStolenCardEntityDatastore cardDatastore;
     private final ITransactionValidationDatastore transactionDatastore;
-    private final IConfigProvider configProvider;
+    private final TransactionValidationConfigService configService;
 
+    @Override
     public Dto.TransactionApprovalVerdict getTransactionApprovalVerdict(long amount, String ip, String number,
                                                                         Enum.RegionCode regionCode, LocalDateTime date) {
         // actions
@@ -35,14 +39,13 @@ public class TransactionValidationService implements ITransactionValidationServi
                 number, date, ip);
         long countTransactionsWithDifferentRegion = transactionDatastore.countTransactionsWithDifferentRegionInLastHour(
                 number, date, regionCode);
-        long amountLimitForAllowed = configProvider.getTransactionValidationConfig().amountLimitForAllowed();
-        long amountLimitForManualProcessing = configProvider.getTransactionValidationConfig().amountLimitForManualProcessing();
+        long amountLimitForAllowed = configService.getTransactionValidationConfig().amountLimitForAllowed();
+        long amountLimitForManualProcessing = configService.getTransactionValidationConfig().amountLimitForManualProcessing();
 
         // calculations
         Dto.TransactionApprovalVerdict approvalVerdict = TransactionValidationCalculations.getTransactionApprovalVerdict(amount
-                , isIpBlacklisted,
-                isCreditCardBlacklisted, countTransactionsWithDifferentIp, countTransactionsWithDifferentRegion,
-                amountLimitForAllowed, amountLimitForManualProcessing);
+                , isIpBlacklisted, isCreditCardBlacklisted, countTransactionsWithDifferentIp,
+                countTransactionsWithDifferentRegion, amountLimitForAllowed, amountLimitForManualProcessing);
 
         // action
         transactionDatastore.save(toEntity(amount, ip, number, regionCode, date, approvalVerdict));
@@ -50,23 +53,28 @@ public class TransactionValidationService implements ITransactionValidationServi
     }
 
     @Override
-    public Result<ErrorEnum, TransactionValidationEntity> updateVerdict(Long transactionId, Enum.TransactionStatus feedback) {
-        Optional<TransactionValidationEntity> entityOpt = transactionDatastore.findById(transactionId);
-        if (entityOpt.isEmpty()) {
+    public Result<ErrorEnum, TransactionValidationEntity> overrideVerdict(Long transactionId, Enum.TransactionStatus feedback) {
+        Optional<TransactionValidationEntity> transactionValidationEntityOpt = transactionDatastore.findById(transactionId);
+        if (transactionValidationEntityOpt.isEmpty()) {
             return Result.error(ErrorEnum.ENTITY_NOT_FOUND);
         }
-        var entity = entityOpt.get();
-        if (entity.getTransactionStatus() == feedback) {
-            return Result.error(ErrorEnum.STATE_ALREADY_EXISTS);
+        var entitransactionValidationEntity = transactionValidationEntityOpt.get();
+        if (entitransactionValidationEntity.getTransactionStatus() == feedback) {
+            return Result.error(ErrorEnum.UNPROCESSABLE_ENTITY);
         }
-        entity.setTransactionStatus(feedback);
-        return Result.success(transactionDatastore.save(entity));
+        TransactionValidationConfig currentAmountLimits = configService.getTransactionValidationConfig();
+        calculateNewAmountLimits(entitransactionValidationEntity.getAmount(), entitransactionValidationEntity.getTransactionStatus(), feedback, currentAmountLimits)
+                .ifPresent(configService::updateTransactionValidationConfig);
+
+        entitransactionValidationEntity.setFeedback(feedback);
+        return Result.success(transactionDatastore.save(entitransactionValidationEntity));
     }
 
     @Override
     public List<TransactionValidationEntity> getTransactionValidationHistoryOrderById() {
         return transactionDatastore.getTransactionValidationHistoryOrderById();
     }
+
     @Override
     public List<TransactionValidationEntity> getTransactionValidationHistoryOrderById(String creditCardNumber) {
         return transactionDatastore.getTransactionValidationHistoryOrderById(creditCardNumber);

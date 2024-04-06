@@ -18,6 +18,9 @@ public class ConfigEntity {
     @NotBlank
     private String propertyValue;
 
+    public static ConfigEntity create(Enum.ConfigCategory configCategory, String propertyName, long propertyValue) {
+        return create(configCategory, propertyName, String.valueOf(propertyValue));
+    }
     public static ConfigEntity create(Enum.ConfigCategory configCategory, String propertyName, String propertyValue) {
         return new ConfigEntity(new ConfigEntityId(configCategory, propertyName), propertyValue);
     }

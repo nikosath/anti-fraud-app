@@ -10,16 +10,6 @@ import static antifraud.transactionvalidation.service.TransactionValidationConfi
 import static antifraud.transactionvalidation.service.TransactionValidationConfig.PropertyNames.AMOUNT_LIMIT_FOR_MANUAL_PROCESSING;
 
 public record TransactionValidationConfig(long amountLimitForAllowed, long amountLimitForManualProcessing) {
-    public static TransactionValidationConfig from(Collection<ConfigEntity> entities) {
-        Map<String, String> propertyNameToValue = entities.stream().collect(
-                Collectors.toMap(entity -> entity.getPropertyName(), entity -> entity.getPropertyValue()));
-
-        return new TransactionValidationConfig(
-                Long.parseLong(propertyNameToValue.get(AMOUNT_LIMIT_FOR_ALLOWED)),
-                Long.parseLong(propertyNameToValue.get(AMOUNT_LIMIT_FOR_MANUAL_PROCESSING))
-        );
-
-    }
 
     public static class PropertyNames {
         public static final String AMOUNT_LIMIT_FOR_ALLOWED = "AMOUNT_LIMIT_FOR_ALLOWED";

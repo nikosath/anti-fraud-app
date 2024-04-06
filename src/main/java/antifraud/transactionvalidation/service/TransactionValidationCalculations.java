@@ -107,6 +107,42 @@ public class TransactionValidationCalculations {
         return results;
     }
 
+    /**
+     * @return Optional.empty() if no new amount limits are calculated
+     */
+    public static Optional<TransactionValidationConfig> calculateNewAmountLimits(long transactionAmount, Enum.TransactionStatus transactionStatus, Enum.TransactionStatus feedback,
+                                                                                 TransactionValidationConfig currentAmountLimits) {
+        long amountLimitForAllowed = currentAmountLimits.amountLimitForAllowed();
+        long amountLimitForManualProcessing = currentAmountLimits.amountLimitForManualProcessing();
+
+        if (transactionStatus == ALLOWED && feedback == MANUAL_PROCESSING) {
+            amountLimitForAllowed = decreaseAmountLimit(transactionAmount, amountLimitForAllowed);
+        } else  if (transactionStatus == ALLOWED && feedback == PROHIBITED) {
+            amountLimitForAllowed = decreaseAmountLimit(transactionAmount, amountLimitForAllowed);
+            amountLimitForManualProcessing = decreaseAmountLimit(transactionAmount, amountLimitForManualProcessing);
+        } else if (transactionStatus == MANUAL_PROCESSING && feedback == ALLOWED) {
+            amountLimitForAllowed = increaseAmountLimit(transactionAmount, amountLimitForAllowed);
+        } else if (transactionStatus == MANUAL_PROCESSING && feedback == PROHIBITED) {
+            amountLimitForManualProcessing = decreaseAmountLimit(transactionAmount, amountLimitForManualProcessing);
+        } else if (transactionStatus == PROHIBITED && feedback == ALLOWED) {
+            amountLimitForAllowed = increaseAmountLimit(transactionAmount, amountLimitForAllowed);
+            amountLimitForManualProcessing = increaseAmountLimit(transactionAmount, amountLimitForManualProcessing);
+        } else if (transactionStatus == PROHIBITED && feedback == MANUAL_PROCESSING) {
+            amountLimitForManualProcessing = increaseAmountLimit(transactionAmount, amountLimitForManualProcessing);
+        } else {
+            return Optional.empty();
+        }
+        return Optional.of(new TransactionValidationConfig(amountLimitForAllowed, amountLimitForManualProcessing));
+    }
+
+    private static long decreaseAmountLimit(long transactionAmount, long amountLimitForAllowed) {
+        return Math.round(0.8 * amountLimitForAllowed - 0.2 * transactionAmount);
+    }
+
+    private static long increaseAmountLimit(long transactionAmount, long amountLimitForAllowed) {
+        return Math.round(0.8 * amountLimitForAllowed + 0.2 * transactionAmount);
+    }
+
     @Getter
     @RequiredArgsConstructor
     enum TransactionValidationResultEnum {
