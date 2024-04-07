@@ -65,6 +65,13 @@ public abstract class Result<E, S> {
         public E getError() {
             throw new NoSuchElementException("getError() on Success");
         }
+
+        @Override
+        public String toString() {
+            return "Success{" +
+                    "value=" + value +
+                    '}';
+        }
     }
 
     static class Error<E, S> extends Result<E, S> {
@@ -93,6 +100,13 @@ public abstract class Result<E, S> {
         @Override
         public E getError() {
             return value;
+        }
+
+        @Override
+        public String toString() {
+            return "Error{" +
+                    "value=" + value +
+                    '}';
         }
     }
 

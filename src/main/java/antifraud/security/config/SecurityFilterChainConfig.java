@@ -55,6 +55,7 @@ public class SecurityFilterChainConfig {
                         .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_TRANSACTION).hasRole(MERCHANT.name())
                         .requestMatchers(HttpMethod.PUT, Uri.API_ANTIFRAUD_TRANSACTION).hasRole(SUPPORT.name())
                         // API_ANTIFRAUD_HISTORY
+                        .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_HISTORY).hasRole(SUPPORT.name())
                         .requestMatchers(HttpMethod.GET, Uri.API_ANTIFRAUD_HISTORY + ASTERISK).hasRole(SUPPORT.name())
                         // API_ANTIFRAUD_SUSPICIOUS_IP
                         .requestMatchers(HttpMethod.POST, Uri.API_ANTIFRAUD_SUSPICIOUS_IP).hasRole(SUPPORT.name())

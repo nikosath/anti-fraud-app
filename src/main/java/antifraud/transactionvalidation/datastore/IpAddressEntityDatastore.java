@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static antifraud.error.ErrorEnum.*;
+import static antifraud.error.ErrorEnum.ENTITY_ALREADY_EXISTS;
+import static antifraud.error.ErrorEnum.ENTITY_NOT_FOUND;
 
 @Repository
 @RequiredArgsConstructor

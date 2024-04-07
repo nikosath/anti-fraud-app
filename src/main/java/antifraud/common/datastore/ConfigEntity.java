@@ -1,7 +1,8 @@
 package antifraud.common.datastore;
 
 import antifraud.common.Enum;
-import jakarta.persistence.*;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 

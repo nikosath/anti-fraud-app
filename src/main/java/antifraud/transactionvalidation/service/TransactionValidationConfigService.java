@@ -5,6 +5,8 @@ import antifraud.common.datastore.IConfigRepo;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Map;
@@ -21,6 +23,7 @@ import static antifraud.transactionvalidation.service.TransactionValidationConfi
  */
 @RequiredArgsConstructor
 @Service
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public class TransactionValidationConfigService implements ITransactionValidationConfigService {
     private final IConfigRepo repo;
     private TransactionValidationConfig transactionValidationConfig;
@@ -43,20 +46,13 @@ public class TransactionValidationConfigService implements ITransactionValidatio
     }
 
     @PostConstruct
-    private void init() {
-        // TODO: persist default config in a different way, e.g. with data.sql
-        persistDefaultConfig();
-        loadTransactionValidationConfig();
-    }
-
-    private void persistDefaultConfig() {
-        repo.save(ConfigEntity.create(TRANSACTION_VALIDATION, AMOUNT_LIMIT_FOR_ALLOWED, 200));
-        repo.save(ConfigEntity.create(TRANSACTION_VALIDATION, AMOUNT_LIMIT_FOR_MANUAL_PROCESSING, 1500));
-    }
-
-    private void loadTransactionValidationConfig() {
-        transactionValidationConfig = entitiesToConfig(
-                repo.findByConfigCategory(ConfigCategory.TRANSACTION_VALIDATION));
+    private void initializeTransactionValidationConfig() {
+        Collection<ConfigEntity> entities = repo.findByConfigCategory(TRANSACTION_VALIDATION);
+        if (entities.isEmpty()) {
+            persistDefaultConfig();
+            entities = repo.findByConfigCategory(TRANSACTION_VALIDATION);
+        }
+        transactionValidationConfig = entitiesToConfig(entities);
     }
 
     private TransactionValidationConfig entitiesToConfig(Collection<ConfigEntity> entities) {
@@ -68,5 +64,10 @@ public class TransactionValidationConfigService implements ITransactionValidatio
                 Long.parseLong(propertyNameToValue.get(AMOUNT_LIMIT_FOR_MANUAL_PROCESSING))
         );
 
+    }
+    // TODO: externalize default config, e.g. with data.sql or application.properties
+    private void persistDefaultConfig() {
+        repo.save(ConfigEntity.create(TRANSACTION_VALIDATION, AMOUNT_LIMIT_FOR_ALLOWED, 200));
+        repo.save(ConfigEntity.create(TRANSACTION_VALIDATION, AMOUNT_LIMIT_FOR_MANUAL_PROCESSING, 1500));
     }
 }

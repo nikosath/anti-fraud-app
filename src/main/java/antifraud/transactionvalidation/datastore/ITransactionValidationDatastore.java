@@ -13,9 +13,15 @@ public interface ITransactionValidationDatastore {
 
     List<TransactionValidationEntity> saveAll(Iterable<TransactionValidationEntity> transactionValidationEntity);
 
-    List<TransactionValidationEntity> getTransactionValidationHistoryOrderById();
+    /**
+     * @return list of all transactions, ordered by transaction id asc
+     */
+    List<TransactionValidationEntity> getTransactionValidationHistory();
 
-    List<TransactionValidationEntity> getTransactionValidationHistoryOrderById(String creditCardNumber);
+    /**
+     * @return list of transactions for the given credit card number, ordered by transaction id asc
+     */
+    List<TransactionValidationEntity> getTransactionValidationHistory(String creditCardNumber);
 
     long countTransactionsWithDifferentIpInLastHour(String creditCardNumber,
                                                     LocalDateTime transactionDateTime, String ipAddress);

@@ -2,6 +2,7 @@ package antifraud.transactionvalidation.datastore;
 
 import antifraud.transactionvalidation.Enum;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionValidationDatastore implements ITransactionValidationDatastore {
     private final ITransactionValidationRepo repo;
 
@@ -20,7 +22,9 @@ public class TransactionValidationDatastore implements ITransactionValidationDat
 
     @Override
     public Optional<TransactionValidationEntity> findById(Long id) {
-        return repo.findById(id);
+        Optional<TransactionValidationEntity> entity = repo.findById(id);
+        log.debug("findById TransactionValidationEntity: {}", entity);
+        return entity;
     }
 
     @Override
@@ -29,11 +33,11 @@ public class TransactionValidationDatastore implements ITransactionValidationDat
     }
 
     @Override
-    public List<TransactionValidationEntity> getTransactionValidationHistoryOrderById() {
+    public List<TransactionValidationEntity> getTransactionValidationHistory() {
         return repo.findAllByOrderById();
     }
     @Override
-    public List<TransactionValidationEntity> getTransactionValidationHistoryOrderById(String creditCardNumber) {
+    public List<TransactionValidationEntity> getTransactionValidationHistory(String creditCardNumber) {
         return repo.findByCreditCardNumberOrderById(creditCardNumber);
     }
 

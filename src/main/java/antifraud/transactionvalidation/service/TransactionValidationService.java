@@ -54,11 +54,15 @@ public class TransactionValidationService implements ITransactionValidationServi
 
     @Override
     public Result<ErrorEnum, TransactionValidationEntity> overrideVerdict(Long transactionId, Enum.TransactionStatus feedback) {
+
         Optional<TransactionValidationEntity> transactionValidationEntityOpt = transactionDatastore.findById(transactionId);
         if (transactionValidationEntityOpt.isEmpty()) {
             return Result.error(ErrorEnum.ENTITY_NOT_FOUND);
         }
         var entitransactionValidationEntity = transactionValidationEntityOpt.get();
+        if (entitransactionValidationEntity.getFeedback() != null) {
+            return Result.error(ErrorEnum.STATE_ALREADY_EXISTS);
+        }
         if (entitransactionValidationEntity.getTransactionStatus() == feedback) {
             return Result.error(ErrorEnum.UNPROCESSABLE_ENTITY);
         }
@@ -72,12 +76,12 @@ public class TransactionValidationService implements ITransactionValidationServi
 
     @Override
     public List<TransactionValidationEntity> getTransactionValidationHistoryOrderById() {
-        return transactionDatastore.getTransactionValidationHistoryOrderById();
+        return transactionDatastore.getTransactionValidationHistory();
     }
 
     @Override
     public List<TransactionValidationEntity> getTransactionValidationHistoryOrderById(String creditCardNumber) {
-        return transactionDatastore.getTransactionValidationHistoryOrderById(creditCardNumber);
+        return transactionDatastore.getTransactionValidationHistory(creditCardNumber);
     }
 
     private boolean isCreditCardBlacklisted(String number) {

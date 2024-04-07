@@ -10,6 +10,7 @@ import antifraud.transactionvalidation.Enum;
 import antifraud.transactionvalidation.Enum.RegionCode;
 import antifraud.transactionvalidation.datastore.TransactionValidationEntity;
 import antifraud.transactionvalidation.service.ITransactionValidationService;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -18,14 +19,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.CreditCardNumber;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class TransactionValidationController {
 
     private final ITransactionValidationService service;
@@ -43,6 +47,7 @@ public class TransactionValidationController {
         log.debug("provideValidationFeedback for request: " + request);
         Result<ErrorEnum, TransactionValidationEntity> result = service.overrideVerdict(
                 request.transactionId(), request.feedback());
+        log.debug("provideValidationFeedback result: " + result);
         if (result.isSuccess()) {
             return ResponseEntity.ok(new ValidationFeedbackResponse(result.getSuccess()));
         }
@@ -55,11 +60,32 @@ public class TransactionValidationController {
                 .map(ValidationFeedbackResponse::new)
                 .toList();
     }
+
     @GetMapping(Uri.API_ANTIFRAUD_HISTORY + Uri.CARD_NUMBER)
-    public List<ValidationFeedbackResponse> getTransactionsByCardNumber(@NotBlank @CreditCardNumber @PathVariable String cardNumber) {
-        return service.getTransactionValidationHistoryOrderById(cardNumber).stream()
+    public ResponseEntity<List<ValidationFeedbackResponse>> getTransactionsByCardNumber(@NotBlank @CreditCardNumber @PathVariable String cardNumber) {
+        List<TransactionValidationEntity> transactionValidations = service.getTransactionValidationHistoryOrderById(cardNumber);
+        if (transactionValidations.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return toResponseEntity(transactionValidations);
+    }
+
+    private ResponseEntity<List<ValidationFeedbackResponse>> toResponseEntity(List<TransactionValidationEntity> transactionValidations) {
+        return ResponseEntity.ok(transactionValidations.stream()
                 .map(ValidationFeedbackResponse::new)
-                .toList();
+                .toList());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException e) {
+        log.debug("e.getCause = {}, e.getConstraintViolations() = {}, e.getSuppressed() = {}",
+                e.getCause(), e.getConstraintViolations(), Arrays.stream(e.getSuppressed()).toList());
+
+        if (e.getConstraintViolations().size() == 1
+                && this.getClass().equals(e.getConstraintViolations().iterator().next().getRootBeanClass())) {
+            return ResponseEntity.badRequest().build();
+        }
+        throw e;
     }
 
     /**
@@ -98,10 +124,11 @@ public class TransactionValidationController {
      */
     private record ValidationFeedbackResponse(Long transactionId, Long amount, String ip, String number, RegionCode region,
                                               LocalDateTime date, Enum.TransactionStatus result,
-                                              Enum.TransactionStatus feedback) {
+                                              String feedback) {
         public ValidationFeedbackResponse(TransactionValidationEntity entity) {
             this(entity.getId(), entity.getAmount(), entity.getIpAddress(), entity.getCreditCardNumber(), entity.getRegionCode(),
-                    entity.getTransactionDateTime(), entity.getTransactionStatus(), entity.getFeedback());
+                    entity.getTransactionDateTime(), entity.getTransactionStatus(),
+                    entity.getFeedback() == null ? "" : entity.getFeedback().name());
         }
     }
 }

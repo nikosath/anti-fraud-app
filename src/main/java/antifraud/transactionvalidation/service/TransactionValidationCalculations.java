@@ -112,6 +112,8 @@ public class TransactionValidationCalculations {
      */
     public static Optional<TransactionValidationConfig> calculateNewAmountLimits(long transactionAmount, Enum.TransactionStatus transactionStatus, Enum.TransactionStatus feedback,
                                                                                  TransactionValidationConfig currentAmountLimits) {
+        log.debug("transactionAmount = " + transactionAmount + ", transactionStatus = " + transactionStatus + ", " +
+                "feedback = " + feedback + ", currentAmountLimits = " + currentAmountLimits);
         long amountLimitForAllowed = currentAmountLimits.amountLimitForAllowed();
         long amountLimitForManualProcessing = currentAmountLimits.amountLimitForManualProcessing();
 
@@ -132,15 +134,16 @@ public class TransactionValidationCalculations {
         } else {
             return Optional.empty();
         }
+        log.debug("amountLimitForAllowed = " + amountLimitForAllowed + ", amountLimitForManualProcessing = " + amountLimitForManualProcessing);
         return Optional.of(new TransactionValidationConfig(amountLimitForAllowed, amountLimitForManualProcessing));
     }
 
     private static long decreaseAmountLimit(long transactionAmount, long amountLimitForAllowed) {
-        return Math.round(0.8 * amountLimitForAllowed - 0.2 * transactionAmount);
+        return (long) Math.ceil(0.8 * amountLimitForAllowed - 0.2 * transactionAmount);
     }
 
     private static long increaseAmountLimit(long transactionAmount, long amountLimitForAllowed) {
-        return Math.round(0.8 * amountLimitForAllowed + 0.2 * transactionAmount);
+        return (long) Math.ceil(0.8 * amountLimitForAllowed + 0.2 * transactionAmount);
     }
 
     @Getter
